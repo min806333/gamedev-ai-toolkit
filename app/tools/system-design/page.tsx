@@ -14,7 +14,8 @@ export default async function SystemDesignToolPage() {
     <PremiumToolGate
       plan={usage.plan}
       requiredPlan="pro"
-      message="Upgrade to Pro to generate full System Design documents."
+      message=""
+      messageKey="systemDesignMessage"
     >
       <PlanningToolPage tool="system-design" />
     </PremiumToolGate>

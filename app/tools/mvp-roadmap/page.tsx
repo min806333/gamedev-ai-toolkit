@@ -14,7 +14,8 @@ export default async function MvpRoadmapToolPage() {
     <PremiumToolGate
       plan={usage.plan}
       requiredPlan="studio"
-      message="Upgrade to Studio to generate full MVP Roadmaps."
+      message=""
+      messageKey="mvpRoadmapMessage"
     >
       <PlanningToolPage tool="mvp-roadmap" />
     </PremiumToolGate>

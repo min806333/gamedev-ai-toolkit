@@ -14,7 +14,8 @@ export default async function GddToolPage() {
     <PremiumToolGate
       plan={usage.plan}
       requiredPlan="pro"
-      message="Upgrade to Pro to generate full Game Design Documents."
+      message=""
+      messageKey="gddMessage"
     >
       <PlanningToolPage tool="gdd" />
     </PremiumToolGate>

@@ -46,9 +46,9 @@ export default function UiToolPage() {
         }
       ]}
       fields={[
-        { name: "gameType", label: t.tools.gameType, placeholder: "Top-down action RPG" },
-        { name: "style", label: t.tools.style, placeholder: "Clean sci-fi HUD" },
-        { name: "theme", label: t.tools.theme, placeholder: "Ancient tech ruins" }
+        { name: "gameType", label: t.tools.gameType, placeholder: t.tools.placeholders.uiGameType },
+        { name: "style", label: t.tools.style, placeholder: t.tools.placeholders.uiStyle },
+        { name: "theme", label: t.tools.theme, placeholder: t.tools.placeholders.uiTheme }
       ]}
     />
   );

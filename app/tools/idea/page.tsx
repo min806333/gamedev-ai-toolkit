@@ -46,9 +46,9 @@ export default function IdeaToolPage() {
         }
       ]}
       fields={[
-        { name: "genre", label: t.tools.genre, placeholder: "Roguelike deckbuilder" },
-        { name: "platform", label: t.tools.platform, placeholder: "PC + Steam Deck" },
-        { name: "theme", label: t.tools.theme, placeholder: "Neo-noir cyberpunk" }
+        { name: "genre", label: t.tools.genre, placeholder: t.tools.placeholders.ideaGenre },
+        { name: "platform", label: t.tools.platform, placeholder: t.tools.placeholders.ideaPlatform },
+        { name: "theme", label: t.tools.theme, placeholder: t.tools.placeholders.ideaTheme }
       ]}
     />
   );

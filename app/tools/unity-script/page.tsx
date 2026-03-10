@@ -50,15 +50,20 @@ export default function UnityScriptToolPage() {
           name: "scriptType",
           label: t.tools.scriptType,
           type: "select",
-          placeholder: "Select a script type...",
-          options: ["Player Movement", "Enemy AI", "Camera Controller", "Inventory System"]
+          placeholder: t.tools.placeholders.unityScriptType,
+          options: [
+            t.tools.options.playerMovement,
+            t.tools.options.enemyAi,
+            t.tools.options.cameraController,
+            t.tools.options.inventorySystem
+          ]
         },
-        { name: "gameGenre", label: t.tools.gameGenre, placeholder: "Action platformer" },
+        { name: "gameGenre", label: t.tools.gameGenre, placeholder: t.tools.placeholders.unityGameGenre },
         {
           name: "extraFeatures",
           label: t.tools.extraFeatures,
           type: "textarea",
-          placeholder: "Double jump, dash cooldown, animation hooks, slope handling"
+          placeholder: t.tools.placeholders.unityExtraFeatures
         }
       ]}
     />

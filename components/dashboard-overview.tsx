@@ -29,7 +29,7 @@ export function DashboardOverview({
             <StatsCard label={t.dashboard.today} value={String(usage.todayCount)} hint={t.dashboard.todayHint} />
             <StatsCard
               label={t.dashboard.remaining}
-              value={usage.remaining === Number.POSITIVE_INFINITY ? "Unlimited" : String(usage.remaining)}
+              value={usage.remaining === Number.POSITIVE_INFINITY ? t.common.unlimited : String(usage.remaining)}
               hint={t.dashboard.remainingHint}
             />
             <StatsCard

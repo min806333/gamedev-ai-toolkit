@@ -30,7 +30,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 OPENAI_API_KEY=
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=https://gamedev-ai-toolkit.vercel.app
 ```
 
 ## Supabase setup
@@ -38,7 +38,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 1. Create a Supabase project.
 2. Enable Email auth and Google auth in Authentication > Providers.
 3. Run the SQL in `supabase/schema.sql`.
-4. Add `http://localhost:3000/auth/callback` and your Vercel domain callback URL to Supabase auth redirects.
+4. Add `https://gamedev-ai-toolkit.vercel.app` and your deployed domain callback URL to Supabase auth redirects.
 
 ## Local development
 
@@ -52,7 +52,7 @@ npm run dev
 1. Push the project to GitHub.
 2. Import it into Vercel.
 3. Add the environment variables in the Vercel project settings.
-4. Set `NEXT_PUBLIC_SITE_URL` to your production URL.
+4. Set `NEXT_PUBLIC_APP_URL` to your production URL.
 
 ## Notes
 

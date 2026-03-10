@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
+import { getAppUrl } from "@/lib/getBaseUrl";
 import { createClient } from "@/lib/supabase/server";
 import { ensureUserProfile } from "@/lib/usage";
-import { getBaseUrl } from "@/lib/utils";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const nextParam = requestUrl.searchParams.get("next");
+  const nextPath = nextParam?.startsWith("/") ? nextParam : "/dashboard";
 
   if (code) {
     const supabase = createClient();
@@ -16,5 +18,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${getBaseUrl()}/dashboard`);
+  return NextResponse.redirect(getAppUrl(nextPath));
 }

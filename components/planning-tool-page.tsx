@@ -69,14 +69,14 @@ export function PlanningToolPage({ tool }: { tool: PlanningTool }) {
           }
         ]}
         fields={[
-          { name: "gameGenre", label: t.tools.gameGenre, placeholder: "Action RPG" },
-          { name: "platform", label: t.tools.platform, placeholder: "PC + Console" },
-          { name: "theme", label: t.tools.theme, placeholder: "Post-apocalyptic sky islands" },
-          { name: "targetAudience", label: t.tools.targetAudience, placeholder: "Midcore strategy players aged 18-34" },
-          { name: "monetizationModel", label: t.tools.monetizationModel, placeholder: "Premium + cosmetic DLC" },
-          { name: "coreDifferentiation", label: t.tools.coreDifferentiation, placeholder: "Tactical runs with persistent city rebuilding" },
-          { name: "playerMode", label: t.tools.playerMode, placeholder: "Single player" },
-          { name: "sessionLength", label: t.tools.sessionLength, placeholder: "15-20 minutes" }
+          { name: "gameGenre", label: t.tools.gameGenre, placeholder: t.tools.placeholders.gddGameGenre },
+          { name: "platform", label: t.tools.platform, placeholder: t.tools.placeholders.gddPlatform },
+          { name: "theme", label: t.tools.theme, placeholder: t.tools.placeholders.gddTheme },
+          { name: "targetAudience", label: t.tools.targetAudience, placeholder: t.tools.placeholders.gddTargetAudience },
+          { name: "monetizationModel", label: t.tools.monetizationModel, placeholder: t.tools.placeholders.gddMonetizationModel },
+          { name: "coreDifferentiation", label: t.tools.coreDifferentiation, placeholder: t.tools.placeholders.gddCoreDifferentiation },
+          { name: "playerMode", label: t.tools.playerMode, placeholder: t.tools.placeholders.gddPlayerMode },
+          { name: "sessionLength", label: t.tools.sessionLength, placeholder: t.tools.placeholders.gddSessionLength }
         ]}
       />
     );
@@ -131,11 +131,11 @@ export function PlanningToolPage({ tool }: { tool: PlanningTool }) {
           }
         ]}
         fields={[
-          { name: "gameGenre", label: t.tools.gameGenre, placeholder: "Tower Defense" },
-          { name: "platform", label: t.tools.platform, placeholder: "Mobile" },
-          { name: "artStyle", label: t.tools.artStyle, placeholder: "Minimal sci-fi HUD" },
-          { name: "coreMode", label: t.tools.coreMode, placeholder: "Session-based co-op raids" },
-          { name: "monetizationModel", label: t.tools.monetizationModel, placeholder: "Battle pass + cosmetics" }
+          { name: "gameGenre", label: t.tools.gameGenre, placeholder: t.tools.placeholders.uiUxGameGenre },
+          { name: "platform", label: t.tools.platform, placeholder: t.tools.placeholders.uiUxPlatform },
+          { name: "artStyle", label: t.tools.artStyle, placeholder: t.tools.placeholders.uiUxArtStyle },
+          { name: "coreMode", label: t.tools.coreMode, placeholder: t.tools.placeholders.uiUxCoreMode },
+          { name: "monetizationModel", label: t.tools.monetizationModel, placeholder: t.tools.placeholders.uiUxMonetizationModel }
         ]}
       />
     );
@@ -194,12 +194,12 @@ export function PlanningToolPage({ tool }: { tool: PlanningTool }) {
           }
         ]}
         fields={[
-          { name: "gameGenre", label: t.tools.gameGenre, placeholder: "Idle strategy" },
-          { name: "coreMechanic", label: t.tools.coreMechanic, placeholder: "Automated resource chains" },
-          { name: "metaProgression", label: t.tools.metaProgression, placeholder: "Prestige loop with permanent tech upgrades" },
-          { name: "currencyTypes", label: t.tools.currencyTypes, placeholder: "Gold, gems, guild tokens" },
-          { name: "eventSystem", label: t.tools.eventSystem, placeholder: "Weekly boss event with rotating modifiers" },
-          { name: "leaderboardNeeds", label: t.tools.leaderboardNeeds, placeholder: "Yes, weekly leaderboard by score and clear speed" }
+          { name: "gameGenre", label: t.tools.gameGenre, placeholder: t.tools.placeholders.systemDesignGameGenre },
+          { name: "coreMechanic", label: t.tools.coreMechanic, placeholder: t.tools.placeholders.systemDesignCoreMechanic },
+          { name: "metaProgression", label: t.tools.metaProgression, placeholder: t.tools.placeholders.systemDesignMetaProgression },
+          { name: "currencyTypes", label: t.tools.currencyTypes, placeholder: t.tools.placeholders.systemDesignCurrencyTypes },
+          { name: "eventSystem", label: t.tools.eventSystem, placeholder: t.tools.placeholders.systemDesignEventSystem },
+          { name: "leaderboardNeeds", label: t.tools.leaderboardNeeds, placeholder: t.tools.placeholders.systemDesignLeaderboardNeeds }
         ]}
       />
     );
@@ -253,11 +253,11 @@ export function PlanningToolPage({ tool }: { tool: PlanningTool }) {
         }
       ]}
       fields={[
-        { name: "teamSize", label: t.tools.teamSize, placeholder: "4" },
-        { name: "engine", label: t.tools.engine, placeholder: "Unity" },
-        { name: "targetLaunchPeriod", label: t.tools.targetLaunchPeriod, placeholder: "12 weeks" },
-        { name: "priorityFeatures", label: t.tools.priorityFeatures, type: "textarea", placeholder: "Core loop, tutorial, progression, one polished vertical slice" },
-        { name: "revenueModel", label: t.tools.revenueModel, placeholder: "Premium + cosmetic DLC" }
+        { name: "teamSize", label: t.tools.teamSize, placeholder: t.tools.placeholders.mvpTeamSize },
+        { name: "engine", label: t.tools.engine, placeholder: t.tools.placeholders.mvpEngine },
+        { name: "targetLaunchPeriod", label: t.tools.targetLaunchPeriod, placeholder: t.tools.placeholders.mvpTargetLaunchPeriod },
+        { name: "priorityFeatures", label: t.tools.priorityFeatures, type: "textarea", placeholder: t.tools.placeholders.mvpPriorityFeatures },
+        { name: "revenueModel", label: t.tools.revenueModel, placeholder: t.tools.placeholders.mvpRevenueModel }
       ]}
     />
   );

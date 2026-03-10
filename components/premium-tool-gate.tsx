@@ -12,15 +12,18 @@ export function PremiumToolGate({
   plan,
   requiredPlan,
   message,
+  messageKey,
   children
 }: {
   plan: Plan;
   requiredPlan: Plan;
   message: string;
+  messageKey?: "gddMessage" | "uiUxMessage" | "systemDesignMessage" | "mvpRoadmapMessage";
   children: React.ReactNode;
 }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(true);
+  const resolvedMessage = messageKey ? t.premium[messageKey] : message;
 
   if ((requiredPlan === "pro" && (plan === "pro" || plan === "studio")) || (requiredPlan === "studio" && plan === "studio")) {
     return <>{children}</>;
@@ -52,7 +55,7 @@ export function PremiumToolGate({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-5 text-sm leading-7 text-[color:var(--foreground)]/65">{message}</p>
+            <p className="mt-5 text-sm leading-7 text-[color:var(--foreground)]/65">{resolvedMessage}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/pricing">
                 <Button>{requiredPlan === "studio" ? t.pricing.upgradeToStudio : t.pricing.upgradeToPro}</Button>

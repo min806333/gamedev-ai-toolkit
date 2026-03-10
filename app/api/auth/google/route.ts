@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { getAppUrl, getBaseUrl } from "@/lib/getBaseUrl";
 import { createClient } from "@/lib/supabase/server";
-import { getBaseUrl } from "@/lib/utils";
 
 export async function POST() {
   const supabase = createClient();
@@ -12,7 +12,7 @@ export async function POST() {
   });
 
   if (error || !data.url) {
-    return NextResponse.redirect(`${getBaseUrl()}/login?error=${encodeURIComponent(error?.message || "Google login failed")}`);
+    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error?.message || "Google login failed")}`));
   }
 
   return NextResponse.redirect(data.url);

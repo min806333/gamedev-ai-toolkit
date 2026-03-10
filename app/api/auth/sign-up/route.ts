@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { getAppUrl, getBaseUrl } from "@/lib/getBaseUrl";
 import { createClient } from "@/lib/supabase/server";
 import { ensureUserProfile } from "@/lib/usage";
-import { getBaseUrl } from "@/lib/utils";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
@@ -18,12 +18,12 @@ export async function POST(request: Request) {
   });
 
   if (error) {
-    return NextResponse.redirect(`${getBaseUrl()}/login?error=${encodeURIComponent(error.message)}`);
+    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`));
   }
 
   if (data.user) {
     await ensureUserProfile(data.user);
   }
 
-  return NextResponse.redirect(`${getBaseUrl()}/dashboard`);
+  return NextResponse.redirect(getAppUrl("/dashboard"));
 }

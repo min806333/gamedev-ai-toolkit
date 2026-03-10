@@ -46,9 +46,9 @@ export default function CodeToolPage() {
         }
       ]}
       fields={[
-        { name: "gameType", label: t.tools.gameType, placeholder: "Endless runner" },
-        { name: "engine", label: t.tools.engine, type: "select", options: ["Unity", "Flutter"] },
-        { name: "language", label: t.tools.language, type: "select", options: ["C#", "Dart"] }
+        { name: "gameType", label: t.tools.gameType, placeholder: t.tools.placeholders.codeGameType },
+        { name: "engine", label: t.tools.engine, type: "select", options: [t.tools.options.unity, t.tools.options.flutter] },
+        { name: "language", label: t.tools.language, type: "select", options: [t.tools.options.csharp, t.tools.options.dart] }
       ]}
     />
   );

@@ -14,7 +14,8 @@ export default async function UiUxPlanningToolPage() {
     <PremiumToolGate
       plan={usage.plan}
       requiredPlan="pro"
-      message="Upgrade to Pro to generate full UI/UX planning documents."
+      message=""
+      messageKey="uiUxMessage"
     >
       <PlanningToolPage tool="ui-ux-planning" />
     </PremiumToolGate>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useLanguage } from "@/components/language-provider";
+import { CustomSelect } from "@/components/ui/custom-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Plan } from "@/lib/types";
@@ -250,20 +251,13 @@ export function ToolForm({
               <label key={field.name} className="block">
                 <span className="mb-2 block text-sm text-[color:var(--foreground)]/65">{field.label}</span>
                 {field.type === "select" ? (
-                  <select
-                    name={field.name}
+                  <CustomSelect
                     value={values[field.name]}
-                    onChange={(event) => updateValue(field.name, event.target.value)}
-                    className="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/50 px-4 py-3 text-sm text-[color:var(--foreground)] outline-none focus:border-[color:var(--border-strong)]"
-                    required
-                  >
-                    <option value="">{field.placeholder || t.common.select}</option>
-                    {field.options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => updateValue(field.name, value)}
+                    placeholder={field.placeholder || t.common.select}
+                    options={field.options.map((option) => ({ value: option, label: option }))}
+                    buttonClassName="w-full bg-[color:var(--background)]/50"
+                  />
                 ) : field.type === "textarea" ? (
                   <textarea
                     name={field.name}
