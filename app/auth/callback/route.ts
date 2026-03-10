@@ -18,5 +18,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(getAppUrl(nextPath));
+  return NextResponse.redirect(getAppUrl(nextPath, request.url));
 }

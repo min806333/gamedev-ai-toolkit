@@ -38,7 +38,7 @@ NEXT_PUBLIC_APP_URL=https://gamedev-ai-toolkit.vercel.app
 1. Create a Supabase project.
 2. Enable Email auth and Google auth in Authentication > Providers.
 3. Run the SQL in `supabase/schema.sql`.
-4. Add `https://gamedev-ai-toolkit.vercel.app` and your deployed domain callback URL to Supabase auth redirects.
+4. Add `http://localhost:3000/auth/callback` and your deployed domain callback URL to Supabase auth redirects.
 
 ## Local development
 

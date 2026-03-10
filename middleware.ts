@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getAppUrl } from "@/lib/getBaseUrl";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(getAppUrl("/login", request.url));
   }
 
   return response;

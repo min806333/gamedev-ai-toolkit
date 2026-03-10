@@ -13,17 +13,17 @@ export async function POST(request: Request) {
     email,
     password,
     options: {
-      emailRedirectTo: `${getBaseUrl()}/auth/callback`
+      emailRedirectTo: `${getBaseUrl(request.url)}/auth/callback`
     }
   });
 
   if (error) {
-    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`));
+    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`, request.url));
   }
 
   if (data.user) {
     await ensureUserProfile(data.user);
   }
 
-  return NextResponse.redirect(getAppUrl("/dashboard"));
+  return NextResponse.redirect(getAppUrl("/dashboard", request.url));
 }

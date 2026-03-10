@@ -12,12 +12,12 @@ export async function POST(request: Request) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`));
+    return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`, request.url));
   }
 
   if (data.user) {
     await ensureUserProfile(data.user);
   }
 
-  return NextResponse.redirect(getAppUrl("/dashboard"));
+  return NextResponse.redirect(getAppUrl("/dashboard", request.url));
 }
