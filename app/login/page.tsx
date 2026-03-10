@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 export default async function LoginPage({
   searchParams
 }: {
-  searchParams?: { error?: string };
+  searchParams?: { error?: string; success?: string };
 }) {
   const supabase = createClient();
   const {
@@ -16,5 +16,5 @@ export default async function LoginPage({
     redirect("/dashboard");
   }
 
-  return <LoginPageContent error={searchParams?.error} />;
+  return <LoginPageContent error={searchParams?.error} success={searchParams?.success} />;
 }

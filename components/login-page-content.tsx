@@ -5,8 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-export function LoginPageContent({ error }: { error?: string }) {
+export function LoginPageContent({
+  error,
+  success
+}: {
+  error?: string;
+  success?: string;
+}) {
   const { t } = useLanguage();
+  const authMessages = t.auth as typeof t.auth & { checkEmailSuccess?: string };
+  const successMessage =
+    success === "check-email"
+      ? (authMessages.checkEmailSuccess ?? "Check your email to confirm your account, then sign in.")
+      : success;
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
@@ -16,6 +27,11 @@ export function LoginPageContent({ error }: { error?: string }) {
         <p className="mt-3 text-sm text-white/55">{t.auth.description}</p>
         {error ? (
           <p className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-200">{error}</p>
+        ) : null}
+        {successMessage ? (
+          <p className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+            {successMessage}
+          </p>
         ) : null}
         <form action="/api/auth/sign-in" method="post" className="mt-8 space-y-4">
           <label className="block">

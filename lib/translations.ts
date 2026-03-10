@@ -253,7 +253,11 @@ const en = {
     createAccountLabel: "Create account with email",
     createPasswordPlaceholder: "Create a password",
     createAccount: "Create account",
-    googleLoginFailed: "Google login failed"
+    googleLoginFailed: "Google login failed",
+    checkEmailSuccess: "Check your email to confirm your account, then sign in.",
+    signOutFallbackError: "Signed out locally, but the remote session could not be fully cleared.",
+    callbackFailed: "Authentication callback failed. Please try signing in again.",
+    missingCallbackCode: "Authentication callback is missing a code."
   },
   languageSelector: {
     english: "English",
@@ -355,7 +359,8 @@ const en = {
   }
 };
 
-const ko: typeof en = {
+const ko = {
+  ...en,
   nav: {
     pricing: "요금제",
     dashboard: "대시보드",
