@@ -1,14 +1,11 @@
-import { SeoLandingPage } from "@/components/seo-landing-page";
+import { UnityScriptGenerator } from "@/components/generator/tool-presets";
 import { seoPages } from "@/lib/seo-pages";
-import { createClient } from "@/lib/supabase/server";
 
-export const metadata = seoPages.unityScript.metadata;
+export const metadata = {
+  title: seoPages.unityScript.metadataTitle.en,
+  description: seoPages.unityScript.metadataDescription.en
+};
 
-export default async function UnityScriptGeneratorLandingPage() {
-  const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  return <SeoLandingPage pageKey="unityScript" isAuthenticated={!!user} />;
+export default function UnityScriptGeneratorPage() {
+  return <UnityScriptGenerator />;
 }

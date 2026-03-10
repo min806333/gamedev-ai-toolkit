@@ -2,7 +2,10 @@ import { SeoLandingPage } from "@/components/seo-landing-page";
 import { seoPages } from "@/lib/seo-pages";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = seoPages.indieGamePlanning.metadata;
+export const metadata = {
+  title: seoPages.indieGamePlanning.metadataTitle.en,
+  description: seoPages.indieGamePlanning.metadataDescription.en
+};
 
 export default async function IndieGamePlanningToolPage() {
   const supabase = createClient();

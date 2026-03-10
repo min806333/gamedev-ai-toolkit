@@ -1,14 +1,11 @@
-import { SeoLandingPage } from "@/components/seo-landing-page";
+import { GameUiGenerator } from "@/components/generator/tool-presets";
 import { seoPages } from "@/lib/seo-pages";
-import { createClient } from "@/lib/supabase/server";
 
-export const metadata = seoPages.gameUi.metadata;
+export const metadata = {
+  title: seoPages.gameUi.metadataTitle.en,
+  description: seoPages.gameUi.metadataDescription.en
+};
 
-export default async function GameUiGeneratorLandingPage() {
-  const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  return <SeoLandingPage pageKey="gameUi" isAuthenticated={!!user} />;
+export default function GameUiGeneratorPage() {
+  return <GameUiGenerator />;
 }

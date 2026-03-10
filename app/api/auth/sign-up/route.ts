@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Auth sign-up failed:", error);
-      return NextResponse.redirect(getAppUrl(`/login?error=${encodeURIComponent(error.message)}`, request.url));
+      return NextResponse.redirect(getAppUrl(`/signup?error=${encodeURIComponent(error.message)}`, request.url));
     }
 
     if (data.user) {
@@ -30,12 +30,12 @@ export async function POST(request: Request) {
     }
 
     if (!data.session) {
-      return NextResponse.redirect(getAppUrl("/login?success=check-email", request.url));
+      return NextResponse.redirect(getAppUrl("/signup?success=check-email", request.url));
     }
 
     return NextResponse.redirect(getAppUrl("/dashboard", request.url));
   } catch (error) {
     console.error("Auth sign-up route crashed:", error);
-    return NextResponse.redirect(getAppUrl("/login?error=Unable%20to%20create%20account", request.url));
+    return NextResponse.redirect(getAppUrl("/signup?error=Unable%20to%20create%20account", request.url));
   }
 }

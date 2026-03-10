@@ -21,7 +21,9 @@ export async function ensureUserProfile(user: { id: string; email?: string | nul
     await supabase.from("users").insert({
       id: user.id,
       email: user.email,
-      plan: "free"
+      plan: "free",
+      stripe_customer_id: null,
+      subscription_status: "inactive"
     });
   }
 }
@@ -31,7 +33,11 @@ export async function getUsageSummary(userId: string) {
   const today = startOfDay();
 
   const [{ data: profile }, { count }] = await Promise.all([
-    supabase.from("users").select("plan, email, created_at").eq("id", userId).single(),
+    supabase
+      .from("users")
+      .select("plan, email, created_at, stripe_customer_id, subscription_status")
+      .eq("id", userId)
+      .single(),
     supabase
       .from("generations")
       .select("*", { count: "exact", head: true })
@@ -45,6 +51,8 @@ export async function getUsageSummary(userId: string) {
     plan,
     email: profile?.email ?? "",
     createdAt: profile?.created_at ?? "",
+    stripeCustomerId: profile?.stripe_customer_id ?? null,
+    subscriptionStatus: profile?.subscription_status ?? "inactive",
     todayCount: count ?? 0,
     remaining:
       plan === "free" ? Math.max(FREE_PLAN_LIMIT - (count ?? 0), 0) : Number.POSITIVE_INFINITY,

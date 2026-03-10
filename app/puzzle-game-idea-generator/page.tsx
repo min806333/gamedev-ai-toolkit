@@ -2,7 +2,10 @@ import { SeoLandingPage } from "@/components/seo-landing-page";
 import { seoPages } from "@/lib/seo-pages";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = seoPages.puzzleGameIdea.metadata;
+export const metadata = {
+  title: seoPages.puzzleGameIdea.metadataTitle.en,
+  description: seoPages.puzzleGameIdea.metadataDescription.en
+};
 
 export default async function PuzzleGameIdeaGeneratorPage() {
   const supabase = createClient();

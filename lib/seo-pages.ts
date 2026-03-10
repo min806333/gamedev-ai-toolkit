@@ -26,10 +26,8 @@ type LocalizedList = {
 
 export type SeoPageContent = {
   slug: string;
-  metadata: {
-    title: string;
-    description: string;
-  };
+  metadataTitle: LocalizedText;
+  metadataDescription: LocalizedText;
   toolHref: string;
   premiumToolHref?: string;
   heroTitle: LocalizedText;
@@ -68,9 +66,13 @@ function page(config: Omit<SeoPageContent, "benefitsTitle" | "benefits"> & { ben
 export const seoPages: Record<SeoPageKey, SeoPageContent> = {
   unityScript: page({
     slug: "/unity-script-generator",
-    metadata: {
-      title: "Unity Script Generator - AI Tool",
-      description: "Generate Unity C# scripts instantly using AI for indie game development."
+    metadataTitle: {
+      en: "Unity Script Generator - AI Tool",
+      ko: "AI Unity 스크립트 생성기"
+    },
+    metadataDescription: {
+      en: "Generate Unity C# scripts instantly using AI for indie game development.",
+      ko: "인디 게임 개발을 위한 Unity C# 스크립트를 AI로 즉시 생성하세요."
     },
     toolHref: "/tools/unity-script",
     premiumToolHref: "/pricing",
@@ -101,9 +103,13 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameIdea: page({
     slug: "/game-idea-generator",
-    metadata: {
-      title: "Game Idea Generator - AI Tool",
-      description: "Generate game concepts, gameplay loops, monetization ideas, and UI direction instantly using AI."
+    metadataTitle: {
+      en: "Game Idea Generator - AI Tool",
+      ko: "AI 게임 아이디어 생성기"
+    },
+    metadataDescription: {
+      en: "Generate game concepts, gameplay loops, monetization ideas, and UI direction instantly using AI.",
+      ko: "게임 컨셉, 게임플레이 루프, 수익화 아이디어, UI 방향성을 AI로 즉시 생성하세요."
     },
     toolHref: "/tools/idea",
     premiumToolHref: "/pricing",
@@ -136,9 +142,13 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameUi: page({
     slug: "/game-ui-generator",
-    metadata: {
-      title: "Game UI Generator - AI Tool",
-      description: "Generate game UI layouts, HUD ideas, screen flows, and UX direction instantly using AI."
+    metadataTitle: {
+      en: "Game UI Generator - AI Tool",
+      ko: "AI 게임 UI 생성기"
+    },
+    metadataDescription: {
+      en: "Generate game UI layouts, HUD ideas, screen flows, and UX direction instantly using AI.",
+      ko: "게임 UI 레이아웃, HUD 아이디어, 화면 흐름, UX 방향성을 AI로 즉시 생성하세요."
     },
     toolHref: "/tools/ui",
     premiumToolHref: "/pricing",
@@ -166,9 +176,13 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameDesignDocument: page({
     slug: "/game-design-document-generator",
-    metadata: {
-      title: "Game Design Document Generator - AI Tool",
-      description: "Generate game design documents with gameplay loop, mechanics, progression, scope, and production risks."
+    metadataTitle: {
+      en: "Game Design Document Generator - AI Tool",
+      ko: "AI 게임 기획서 생성기"
+    },
+    metadataDescription: {
+      en: "Generate game design documents with gameplay loop, mechanics, progression, scope, and production risks.",
+      ko: "게임플레이 루프, 메커닉, 진행, 범위, 프로덕션 리스크를 포함한 게임 기획서를 생성하세요."
     },
     toolHref: "/tools/gdd",
     premiumToolHref: "/pricing",
@@ -198,10 +212,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   uiUxPlanning: page({
     slug: "/ui-ux-planning-generator",
-    metadata: {
-      title: "UI UX Planning Generator - AI Tool",
-      description: "Generate UI and UX planning docs for game screens, player flows, HUD layout, and component structure."
-    },
+    metadataTitle: t("UI UX Planning Generator - AI Tool"),
+    metadataDescription: t("Generate UI and UX planning docs for game screens, player flows, HUD layout, and component structure."),
     toolHref: "/tools/ui-ux-planning",
     premiumToolHref: "/pricing",
     heroTitle: t("UI UX Planning Generator for production-ready flows"),
@@ -230,10 +242,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   mvpRoadmap: page({
     slug: "/mvp-roadmap-generator",
-    metadata: {
-      title: "MVP Roadmap Generator - AI Tool",
-      description: "Generate a four-week MVP roadmap for game teams with priorities, must-have features, and production risks."
-    },
+    metadataTitle: t("MVP Roadmap Generator - AI Tool"),
+    metadataDescription: t("Generate a four-week MVP roadmap for game teams with priorities, must-have features, and production risks."),
     toolHref: "/tools/mvp-roadmap",
     premiumToolHref: "/pricing",
     heroTitle: t("MVP Roadmap Generator for launch-focused planning"),
@@ -260,10 +270,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   tools: page({
     slug: "/ai-game-development-tools",
-    metadata: {
-      title: "AI Game Development Tools - GameDev AI Toolkit",
-      description: "Explore AI tools for game ideas, UI generation, gameplay code, Unity scripts, and planning docs."
-    },
+    metadataTitle: t("AI Game Development Tools - GameDev AI Toolkit"),
+    metadataDescription: t("Explore AI tools for game ideas, UI generation, gameplay code, Unity scripts, and planning docs."),
     toolHref: "/dashboard",
     premiumToolHref: "/pricing",
     heroTitle: t("AI game development tools for indie teams"),
@@ -285,10 +293,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   puzzleGameIdea: page({
     slug: "/puzzle-game-idea-generator",
-    metadata: {
-      title: "Puzzle Game Idea Generator - AI Tool",
-      description: "Generate puzzle game ideas, loops, monetization hooks, and presentation concepts with AI."
-    },
+    metadataTitle: t("Puzzle Game Idea Generator - AI Tool"),
+    metadataDescription: t("Generate puzzle game ideas, loops, monetization hooks, and presentation concepts with AI."),
     toolHref: "/tools/idea",
     premiumToolHref: "/pricing",
     heroTitle: t("Puzzle Game Idea Generator for casual and midcore concepts"),
@@ -312,10 +318,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   mobileGameUi: page({
     slug: "/mobile-game-ui-generator",
-    metadata: {
-      title: "Mobile Game UI Generator - AI Tool",
-      description: "Generate mobile game UI ideas, HUD layouts, screen structures, and UX direction with AI."
-    },
+    metadataTitle: t("Mobile Game UI Generator - AI Tool"),
+    metadataDescription: t("Generate mobile game UI ideas, HUD layouts, screen structures, and UX direction with AI."),
     toolHref: "/tools/ui",
     premiumToolHref: "/pricing",
     heroTitle: t("Mobile Game UI Generator for monetization-aware layouts"),
@@ -340,10 +344,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   indieGamePlanning: page({
     slug: "/indie-game-planning-tool",
-    metadata: {
-      title: "Indie Game Planning Tool - AI SaaS",
-      description: "Plan indie games with AI using GDD, UI, system design, roadmap, idea, and code generation tools."
-    },
+    metadataTitle: t("Indie Game Planning Tool - AI SaaS"),
+    metadataDescription: t("Plan indie games with AI using GDD, UI, system design, roadmap, idea, and code generation tools."),
     toolHref: "/tools/gdd",
     premiumToolHref: "/pricing",
     heroTitle: t("Indie game planning tools for clearer scope and production"),
@@ -366,9 +368,13 @@ public class PlayerMovement : MonoBehaviour {
   }),
   pixelArtGenerator: page({
     slug: "/pixel-art-generator",
-    metadata: {
-      title: "Pixel Art Generator - AI Tool",
-      description: "Generate pixel art prompts, scene direction, and visual references for indie games using AI."
+    metadataTitle: {
+      en: "Pixel Art Generator - AI Tool",
+      ko: "AI 픽셀 아트 생성기"
+    },
+    metadataDescription: {
+      en: "Generate pixel art prompts, scene direction, and visual references for indie games using AI.",
+      ko: "인디 게임을 위한 픽셀 아트 프롬프트, 장면 방향성, 비주얼 레퍼런스를 AI로 생성하세요."
     },
     toolHref: "/tools/ui",
     premiumToolHref: "/pricing",
@@ -391,10 +397,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameSystemDesign: page({
     slug: "/game-system-design-generator",
-    metadata: {
-      title: "Game System Design Generator - AI Tool",
-      description: "Generate game system design docs covering progression, economy, rewards, rankings, and live systems."
-    },
+    metadataTitle: t("Game System Design Generator - AI Tool"),
+    metadataDescription: t("Generate game system design docs covering progression, economy, rewards, rankings, and live systems."),
     toolHref: "/tools/system-design",
     premiumToolHref: "/pricing",
     heroTitle: t("Game System Design Generator for progression and economy planning"),
@@ -420,10 +424,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameMechanics: page({
     slug: "/game-mechanics-generator",
-    metadata: {
-      title: "Game Mechanics Generator - AI Tool",
-      description: "Generate game mechanics, core loops, feature hooks, and player progression ideas with AI."
-    },
+    metadataTitle: t("Game Mechanics Generator - AI Tool"),
+    metadataDescription: t("Generate game mechanics, core loops, feature hooks, and player progression ideas with AI."),
     toolHref: "/tools/idea",
     premiumToolHref: "/pricing",
     heroTitle: t("Game Mechanics Generator for stronger core loops"),
@@ -447,10 +449,8 @@ public class PlayerMovement : MonoBehaviour {
   }),
   gameMonetization: page({
     slug: "/game-monetization-generator",
-    metadata: {
-      title: "Game Monetization Generator - AI Tool",
-      description: "Generate game monetization strategies, retention hooks, reward structures, and revenue ideas with AI."
-    },
+    metadataTitle: t("Game Monetization Generator - AI Tool"),
+    metadataDescription: t("Generate game monetization strategies, retention hooks, reward structures, and revenue ideas with AI."),
     toolHref: "/tools/system-design",
     premiumToolHref: "/pricing",
     heroTitle: t("Game Monetization Generator for sustainable revenue planning"),

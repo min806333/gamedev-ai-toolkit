@@ -37,10 +37,15 @@ export function PlanUpgradeButton({
       return;
     }
 
+    if (targetPlan === "free") {
+      router.push("/dashboard");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await fetch("/api/account/plan", {
+      const response = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: targetPlan })
@@ -50,7 +55,13 @@ export function PlanUpgradeButton({
         throw new Error("Plan update failed");
       }
 
-      router.refresh();
+      const data = (await response.json()) as { url?: string };
+
+      if (!data.url) {
+        throw new Error("Missing checkout URL");
+      }
+
+      router.push(data.url);
     } finally {
       setLoading(false);
     }

@@ -12,6 +12,13 @@ export const uiSchema = z.object({
   theme: z.string().min(2)
 });
 
+export const pixelArtSchema = z.object({
+  theme: z.string().min(2),
+  style: z.string().min(2),
+  palette: z.string().min(2),
+  resolution: z.string().min(2)
+});
+
 export const codeSchema = z.object({
   gameType: z.string().min(2),
   engine: z.enum(["Unity", "Flutter"]),

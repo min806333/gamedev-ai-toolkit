@@ -1,5 +1,6 @@
 "use client";
 
+import { GddGenerator } from "@/components/generator/tool-presets";
 import { useLanguage } from "@/components/language-provider";
 import { ToolForm } from "@/components/tool-form";
 
@@ -9,77 +10,7 @@ export function PlanningToolPage({ tool }: { tool: PlanningTool }) {
   const { t } = useLanguage();
 
   if (tool === "gdd") {
-    return (
-      <ToolForm
-        title={t.tools.gddTitle}
-        description={t.tools.gddDescription}
-        endpoint="/api/generate/gdd"
-        templates={[
-          {
-            label: t.tools.templatePuzzle,
-            values: {
-              gameGenre: "Puzzle",
-              platform: "Mobile",
-              theme: "Mystic artifact restoration",
-              targetAudience: "Women 18-35 who enjoy relaxed progression",
-              monetizationModel: "Battle pass + cosmetics",
-              coreDifferentiation: "Narrative restoration meta tied to puzzle mastery",
-              playerMode: "Single player",
-              sessionLength: "5-8 minutes"
-            }
-          },
-          {
-            label: t.tools.templateIdle,
-            values: {
-              gameGenre: "Idle",
-              platform: "iOS and Android",
-              theme: "Underwater energy colony",
-              targetAudience: "Broad casual players",
-              monetizationModel: "Ads + starter bundles",
-              coreDifferentiation: "Reactive colony automation that changes the map",
-              playerMode: "Single player",
-              sessionLength: "2-5 minutes"
-            }
-          },
-          {
-            label: t.tools.templateRpg,
-            values: {
-              gameGenre: "RPG",
-              platform: "PC",
-              theme: "Fallen moon kingdom",
-              targetAudience: "Core fantasy RPG players",
-              monetizationModel: "Premium box price + DLC",
-              coreDifferentiation: "Time-loop party building with evolving class memory",
-              playerMode: "Single player",
-              sessionLength: "30-45 minutes"
-            }
-          },
-          {
-            label: t.tools.templateTowerDefense,
-            values: {
-              gameGenre: "Tower Defense",
-              platform: "PC and mobile",
-              theme: "Bio-mechanical frontier war",
-              targetAudience: "Strategy players who enjoy short tactical sessions",
-              monetizationModel: "Cosmetics + expansion packs",
-              coreDifferentiation: "Movable towers and terrain mutation system",
-              playerMode: "Single player",
-              sessionLength: "10-15 minutes"
-            }
-          }
-        ]}
-        fields={[
-          { name: "gameGenre", label: t.tools.gameGenre, placeholder: t.tools.placeholders.gddGameGenre },
-          { name: "platform", label: t.tools.platform, placeholder: t.tools.placeholders.gddPlatform },
-          { name: "theme", label: t.tools.theme, placeholder: t.tools.placeholders.gddTheme },
-          { name: "targetAudience", label: t.tools.targetAudience, placeholder: t.tools.placeholders.gddTargetAudience },
-          { name: "monetizationModel", label: t.tools.monetizationModel, placeholder: t.tools.placeholders.gddMonetizationModel },
-          { name: "coreDifferentiation", label: t.tools.coreDifferentiation, placeholder: t.tools.placeholders.gddCoreDifferentiation },
-          { name: "playerMode", label: t.tools.playerMode, placeholder: t.tools.placeholders.gddPlayerMode },
-          { name: "sessionLength", label: t.tools.sessionLength, placeholder: t.tools.placeholders.gddSessionLength }
-        ]}
-      />
-    );
+    return <GddGenerator />;
   }
 
   if (tool === "ui-ux-planning") {

@@ -41,6 +41,33 @@ Return markdown with these sections:
   `.trim();
 }
 
+export function buildPixelArtPrompt(input: {
+  theme: string;
+  style: string;
+  palette: string;
+  resolution: string;
+  languageInstruction?: string;
+}) {
+  return `
+You are a pixel art prompt designer helping indie game teams create production-ready image prompts.
+${input.languageInstruction ?? "Respond in English."}
+Create prompt sets for:
+- Theme: ${input.theme}
+- Style: ${input.style}
+- Palette: ${input.palette}
+- Resolution: ${input.resolution}
+
+Return markdown with these sections:
+1. Pixel Characters
+2. Pixel Environments
+3. Pixel UI Icons
+4. Stable Diffusion Prompt Pack
+5. Midjourney Prompt Pack
+
+Each section should include concrete visual direction, composition details, and prompt wording suitable for direct use or light editing.
+  `.trim();
+}
+
 export function buildCodePrompt(input: {
   gameType: string;
   engine: string;

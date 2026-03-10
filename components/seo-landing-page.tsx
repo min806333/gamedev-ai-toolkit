@@ -20,6 +20,7 @@ export function SeoLandingPage({
   const { language, t } = useLanguage();
   const page = seoPages[pageKey];
   const relatedPages = page.related.map((key) => seoPages[key]);
+  const localizedSeoHref = (slug: string) => `/${language}${slug}`;
 
   return (
     <div className="min-h-screen bg-[color:var(--background)]">
@@ -129,7 +130,7 @@ export function SeoLandingPage({
           </div>
           <div className="grid gap-5 md:grid-cols-3">
             {relatedPages.map((related) => (
-              <Link key={related.slug} href={related.slug} className="h-full">
+              <Link key={related.slug} href={localizedSeoHref(related.slug)} className="h-full">
                 <Card className="group flex h-full flex-col border-[color:var(--border)] bg-[color:var(--card)] p-6 transition hover:-translate-y-1 hover:bg-[color:var(--card-strong)]">
                   <h3 className="text-lg font-semibold text-[color:var(--foreground)]">{related.heroTitle[language]}</h3>
                   <p className="mt-3 text-sm leading-7 text-[color:var(--foreground)]/62">{related.heroDescription[language]}</p>

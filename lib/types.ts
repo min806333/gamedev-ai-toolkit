@@ -2,6 +2,7 @@ export type Plan = "free" | "pro" | "studio";
 export type ToolType =
   | "idea"
   | "ui"
+  | "pixel-art"
   | "code"
   | "unity-script"
   | "gdd"

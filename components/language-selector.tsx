@@ -1,11 +1,15 @@
 "use client";
 
 import { Globe2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { localizePath } from "@/lib/i18n-routing";
 import { useLanguage } from "@/components/language-provider";
 import { CustomSelect } from "@/components/ui/custom-select";
 import type { Language } from "@/lib/translations";
 
 export function LanguageSelector() {
+  const pathname = usePathname();
+  const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
   const options = [
     { value: "en", label: t.languageSelector.english },
@@ -18,7 +22,14 @@ export function LanguageSelector() {
       <span className="hidden sm:inline">{t.nav.language}</span>
       <CustomSelect
         value={language}
-        onChange={(value) => setLanguage(value as Language)}
+        onChange={(value) => {
+          const nextLanguage = value as Language;
+          setLanguage(nextLanguage);
+
+          if (pathname && (pathname === "/" || pathname.startsWith("/en/") || pathname.startsWith("/ko/") || pathname === "/en" || pathname === "/ko")) {
+            router.push(localizePath(pathname, nextLanguage));
+          }
+        }}
         options={options}
         placeholder={t.nav.language}
         buttonClassName="min-w-[120px] border-transparent bg-transparent px-2 py-1.5 hover:bg-[color:var(--card-strong)]"

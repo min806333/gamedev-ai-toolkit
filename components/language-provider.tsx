@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { getLanguageFromPathname } from "@/lib/i18n-routing";
 import { translations, type Language } from "@/lib/translations";
 
 const STORAGE_KEY = "gamedev-ai-language";
@@ -21,6 +23,11 @@ function detectInitialLanguage(): Language {
     return "en";
   }
 
+  const pathLanguage = getLanguageFromPathname(window.location.pathname);
+  if (pathLanguage) {
+    return pathLanguage;
+  }
+
   const stored = window.localStorage.getItem(STORAGE_KEY) as Language | null;
   if (stored === "en" || stored === "ko") {
     return stored;
@@ -30,6 +37,7 @@ function detectInitialLanguage(): Language {
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [language, setLanguageState] = useState<Language>("en");
 
   useEffect(() => {
@@ -39,6 +47,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    const pathLanguage = getLanguageFromPathname(pathname);
+
+    if (pathLanguage && pathLanguage !== language) {
+      setLanguageState(pathLanguage);
+      window.localStorage.setItem(STORAGE_KEY, pathLanguage);
+    }
+  }, [language, pathname]);
 
   function setLanguage(nextLanguage: Language) {
     setLanguageState(nextLanguage);

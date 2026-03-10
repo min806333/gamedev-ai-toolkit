@@ -4,13 +4,18 @@ create table if not exists public.users (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null unique,
   plan text not null default 'free' check (plan in ('free', 'pro', 'studio')),
+  stripe_customer_id text,
+  subscription_status text default 'inactive',
   created_at timestamptz not null default timezone('utc'::text, now())
 );
+
+alter table public.users add column if not exists stripe_customer_id text;
+alter table public.users add column if not exists subscription_status text default 'inactive';
 
 create table if not exists public.generations (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  tool text not null check (tool in ('idea', 'ui', 'code', 'unity-script', 'gdd', 'ui-ux-plan', 'system-design', 'mvp-roadmap')),
+  tool text not null check (tool in ('idea', 'ui', 'pixel-art', 'code', 'unity-script', 'gdd', 'ui-ux-plan', 'system-design', 'mvp-roadmap')),
   prompt text not null,
   result text not null,
   created_at timestamptz not null default timezone('utc'::text, now())
