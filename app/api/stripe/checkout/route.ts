@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { createInternalServerErrorResponse } from "@/lib/api/errors";
+import { getCurrentUser } from "@/lib/auth/session";
+import { isPaidPlan } from "@/lib/billing";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getAppUrl } from "@/lib/getBaseUrl";
+import { ensureUserProfile } from "@/lib/usage";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover"
@@ -9,24 +15,37 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await ensureUserProfile(user);
+
     const body = (await req.json()) as { plan?: string };
     const plan = body.plan;
 
-    const priceId =
-      plan === "pro"
-        ? process.env.STRIPE_PRICE_PRO
-        : plan === "studio"
-          ? process.env.STRIPE_PRICE_STUDIO
-          : null;
-
-    if (!priceId) {
+    if (!plan || !isPaidPlan(plan)) {
       return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `https://${process.env.VERCEL_URL}`;
+    const admin = createAdminClient();
+    const { data: planRecord, error: planError } = await admin
+      .from("plans")
+      .select("id, stripe_price_id")
+      .eq("id", plan)
+      .single();
 
-    if (!baseUrl) {
-      return NextResponse.json({ error: "Missing app URL configuration." }, { status: 500 });
+    if (planError) {
+      console.error("Stripe checkout plan lookup failed:", planError);
+      return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
+    }
+
+    const priceId = planRecord?.stripe_price_id ?? null;
+
+    if (!planRecord || !priceId) {
+      return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -38,8 +57,14 @@ export async function POST(req: Request) {
           quantity: 1
         }
       ],
-      success_url: `${baseUrl.replace(/\/$/, "")}/dashboard`,
-      cancel_url: `${baseUrl.replace(/\/$/, "")}/pricing`
+      client_reference_id: user.id,
+      customer_email: user.email,
+      metadata: {
+        plan: planRecord.id,
+        supabase_user_id: user.id
+      },
+      success_url: getAppUrl("/dashboard", req.url),
+      cancel_url: getAppUrl("/pricing", req.url)
     });
 
     return NextResponse.json({
@@ -47,10 +72,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Stripe checkout failed:", error);
-
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Checkout failed" },
-      { status: 500 }
-    );
+    return createInternalServerErrorResponse(error);
   }
 }

@@ -22,12 +22,13 @@ export async function middleware(request: NextRequest) {
       data: { user }
     } = await supabase.auth.getUser();
 
+    const isAdminRoute = request.nextUrl.pathname.startsWith("/internal-console-x9a7f");
     const isProtectedRoute =
-      request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/tools");
+      isAdminRoute || request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/tools");
     const premiumRoute = PREMIUM_ROUTE_RULES.find((route) => request.nextUrl.pathname.startsWith(route.pathname));
 
     if (!user && isProtectedRoute) {
-      return NextResponse.redirect(getAppUrl("/login", request.url));
+      return NextResponse.redirect(getAppUrl(isAdminRoute ? "/" : "/login", request.url));
     }
 
     if (user && premiumRoute) {
@@ -52,6 +53,10 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error("Auth middleware failed:", error);
 
+    if (request.nextUrl.pathname.startsWith("/internal-console-x9a7f")) {
+      return NextResponse.redirect(getAppUrl("/", request.url));
+    }
+
     if (request.nextUrl.pathname.startsWith("/dashboard") || request.nextUrl.pathname.startsWith("/tools")) {
       return NextResponse.redirect(getAppUrl("/login", request.url));
     }
@@ -65,5 +70,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/tools/:path*", "/login"]
+  matcher: ["/dashboard/:path*", "/tools/:path*", "/internal-console-x9a7f/:path*", "/login"]
 };

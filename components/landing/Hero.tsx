@@ -44,9 +44,9 @@ export function Hero() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-[28px] border border-[color:var(--border)] bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-6 shadow-panel sm:col-span-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm uppercase tracking-[0.24em] text-[color:var(--foreground)]/42">Live Output</span>
+                <span className="text-sm uppercase tracking-[0.24em] text-[color:var(--foreground)]/42">{t.hero.liveOutput}</span>
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">
-                  Streaming
+                  {t.hero.streaming}
                 </span>
               </div>
               <pre className="mt-5 overflow-hidden rounded-2xl border border-[color:var(--border)] bg-black/25 p-4 text-sm leading-7 text-[color:var(--foreground)]/78">
@@ -63,11 +63,11 @@ export function Hero() {
             </div>
             <div className="rounded-[28px] border border-[color:var(--border)] bg-[color:var(--card)] p-5 shadow-panel">
               <Gamepad2 className="h-5 w-5 text-orange-200" />
-              <p className="mt-4 text-sm leading-7 text-[color:var(--foreground)]/70">Idea, UI, code and planning in one workspace.</p>
+              <p className="mt-4 text-sm leading-7 text-[color:var(--foreground)]/70">{t.hero.workspaceNote}</p>
             </div>
             <div className="rounded-[28px] border border-[color:var(--border)] bg-[color:var(--card)] p-5 shadow-panel">
               <Layers3 className="h-5 w-5 text-cyan-200" />
-              <p className="mt-4 text-sm leading-7 text-[color:var(--foreground)]/70">Structured outputs built for actual production decisions.</p>
+              <p className="mt-4 text-sm leading-7 text-[color:var(--foreground)]/70">{t.hero.productionNote}</p>
             </div>
           </div>
         </div>

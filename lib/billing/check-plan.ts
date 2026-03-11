@@ -12,3 +12,7 @@ export function getDailyGenerationLimit(plan: Plan) {
 export function isUnlimitedPlan(plan: Plan) {
   return getDailyGenerationLimit(plan) === null;
 }
+
+export function hasPaidAccess(plan: Plan) {
+  return plan !== "free";
+}

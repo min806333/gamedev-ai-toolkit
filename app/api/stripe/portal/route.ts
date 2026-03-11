@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createInternalServerErrorResponse } from "@/lib/api/errors";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createBillingPortalSession } from "@/lib/billing/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -35,10 +36,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Stripe billing portal failed:", error);
-
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Portal failed" },
-      { status: 500 }
-    );
+    return createInternalServerErrorResponse(error);
   }
 }

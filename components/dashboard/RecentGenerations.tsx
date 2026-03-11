@@ -20,7 +20,7 @@ export function RecentGenerations({
           <h2 className="mt-3 text-2xl font-semibold text-[color:var(--foreground)]">{t.history.title}</h2>
           <p className="mt-2 text-sm text-[color:var(--foreground)]/55">{t.dashboard.recentHint}</p>
         </div>
-        <Link href="/dashboard/generations" className="inline-flex items-center gap-2 text-sm text-[color:var(--foreground)]/65 transition hover:text-[color:var(--foreground)]">
+        <Link href="/dashboard/history" className="inline-flex items-center gap-2 text-sm text-[color:var(--foreground)]/65 transition hover:text-[color:var(--foreground)]">
           {t.dashboard.browseHistory}
           <ArrowUpRight className="h-4 w-4" />
         </Link>

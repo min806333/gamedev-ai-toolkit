@@ -32,3 +32,18 @@ export interface GenerationRecord {
   total_tokens?: number | null;
   created_at: string;
 }
+
+export interface UsageLogRecord {
+  id: string;
+  user_id: string;
+  tool: ToolType;
+  provider?: AIProviderName | null;
+  model?: string | null;
+  prompt: string;
+  status: "success" | "failed" | "rate_limited" | "blocked";
+  error_message?: string | null;
+  prompt_tokens?: number | null;
+  completion_tokens?: number | null;
+  total_tokens?: number | null;
+  created_at: string;
+}

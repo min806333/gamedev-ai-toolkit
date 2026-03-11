@@ -56,6 +56,10 @@ const en = {
     description:
       "GameDev AI Toolkit helps solo developers move from concept to playable MVP with structured AI workflows, prompt templates, streaming responses, and generation history.",
     viewPricing: "View pricing",
+    liveOutput: "Live Output",
+    streaming: "Streaming",
+    workspaceNote: "Idea, UI, code and planning in one workspace.",
+    productionNote: "Structured outputs built for actual production decisions.",
     highlights: [
       {
         title: "Idea generation",
@@ -441,6 +445,10 @@ const ko = {
     description:
       "GameDev AI Toolkit은 솔로 개발자가 구조화된 AI 워크플로우, 프롬프트 템플릿, 스트리밍 응답, 생성 기록을 통해 컨셉에서 플레이 가능한 MVP까지 빠르게 이동하도록 돕습니다.",
     viewPricing: "요금제 보기",
+    liveOutput: "실시간 출력",
+    streaming: "스트리밍",
+    workspaceNote: "아이디어, UI, 코드, 기획을 하나의 워크스페이스에서 정리하세요.",
+    productionNote: "실제 제작 판단에 바로 쓸 수 있는 구조화된 결과를 제공합니다.",
     highlights: [
       {
         title: "아이디어 생성",

@@ -1,12 +1,15 @@
 import { ZodType } from "zod";
 import { executeGeneration } from "@/lib/ai/execute-generation";
+import { containsBlockedPromptInstruction } from "@/lib/ai/prompt-safety";
 import type { AIProviderName } from "@/lib/ai/providers/types";
+import { checkRateLimit } from "@/lib/ratelimit";
 import { createClient } from "@/lib/supabase/server";
 import {
   checkUsageLimit,
   ensureUserProfile,
   enforceRequiredPlan,
   getCachedGeneration,
+  logUsageRequest,
   recordGeneration
 } from "@/lib/usage";
 import type { Plan, ToolType } from "@/lib/types";
@@ -22,6 +25,9 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
   provider?: AIProviderName;
   model?: string;
 }) {
+  let currentUserId: string | null = null;
+  let promptForLogging = "";
+
   try {
     const payload = params.schema.parse(await params.request.json());
     const supabase = createClient();
@@ -33,12 +39,36 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
       return new Response("Unauthorized", { status: 401 });
     }
 
+    currentUserId = user.id;
+    const limit = await checkRateLimit(`generation:${user.id}`);
+
+    if (!limit.success) {
+      await logUsageRequest({
+        userId: user.id,
+        tool: params.tool,
+        provider: params.provider,
+        model: params.model,
+        prompt: "RATE_LIMITED",
+        status: "rate_limited",
+        error: "Too many requests"
+      });
+
+      return new Response("Too many requests", {
+        status: 429,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Retry-After": String(Math.max(1, Math.ceil((limit.reset - Date.now()) / 1000)))
+        }
+      });
+    }
+
     await ensureUserProfile(user);
     const usage = await checkUsageLimit(user.id);
     if (params.requiredPlan) {
       await enforceRequiredPlan(user.id, params.requiredPlan);
     }
     const promptPayload = JSON.stringify(payload);
+    promptForLogging = promptPayload;
     const cachedResult = await getCachedGeneration({
       prompt: promptPayload,
       tool: params.tool,
@@ -47,6 +77,15 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     });
 
     if (cachedResult) {
+      await logUsageRequest({
+        userId: user.id,
+        tool: params.tool,
+        provider: params.provider,
+        model: params.model,
+        prompt: promptPayload,
+        status: "success"
+      });
+
       return new Response(cachedResult, {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
@@ -56,6 +95,26 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     }
 
     const prompt = params.buildPrompt(payload);
+
+    if (containsBlockedPromptInstruction(prompt)) {
+      await logUsageRequest({
+        userId: user.id,
+        tool: params.tool,
+        provider: params.provider,
+        model: params.model,
+        prompt,
+        status: "blocked",
+        error: "Prompt contains blocked instructions"
+      });
+
+      return new Response("Prompt contains blocked instructions", {
+        status: 400,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8"
+        }
+      });
+    }
+
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream<Uint8Array>({
@@ -83,8 +142,27 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
             });
           }
 
+          await logUsageRequest({
+            userId: user.id,
+            tool: params.tool,
+            provider: generation.provider,
+            model: generation.model,
+            prompt,
+            status: "success",
+            usage: generation.usage
+          });
+
           controller.close();
         } catch (error) {
+          await logUsageRequest({
+            userId: user.id,
+            tool: params.tool,
+            provider: params.provider,
+            model: params.model,
+            prompt,
+            status: "failed",
+            error: error instanceof Error ? error.message : "Generation failed"
+          });
           controller.error(error);
         }
       }
@@ -97,7 +175,24 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
       }
     });
   } catch (error) {
-    return new Response(error instanceof Error ? error.message : "Generation failed", {
+    console.error("Generation request failed:", error);
+
+    if (currentUserId) {
+      await logUsageRequest({
+        userId: currentUserId,
+        tool: params.tool,
+        provider: params.provider,
+        model: params.model,
+        prompt: promptForLogging || "REQUEST_FAILED",
+        status: "failed",
+        error: error instanceof Error ? error.message : "Generation failed"
+      });
+    }
+
+    const message =
+      process.env.NODE_ENV === "development" && error instanceof Error ? error.message : "Internal server error";
+
+    return new Response(message, {
       status: 400,
       headers: {
         "Content-Type": "text/plain; charset=utf-8"

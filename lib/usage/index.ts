@@ -4,4 +4,5 @@ export * from "./constants";
 export * from "./ensure-user-profile";
 export * from "./get-daily-usage";
 export * from "./get-usage-summary";
+export * from "./log-usage";
 export * from "./record-usage";

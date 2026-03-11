@@ -1,4 +1,4 @@
-import { generateText } from "@/lib/ai";
+import { routeAIRequest } from "@/lib/ai-router";
 import type { AIProviderName } from "@/lib/ai/providers/types";
 
 export async function executeGeneration(params: {
@@ -8,5 +8,5 @@ export async function executeGeneration(params: {
   maxOutputTokens?: number;
   onTextDelta?: (delta: string) => void | Promise<void>;
 }) {
-  return generateText(params);
+  return routeAIRequest(params);
 }

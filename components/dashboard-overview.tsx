@@ -47,7 +47,7 @@ export function DashboardOverview({
           <h2 className="mt-3 text-2xl font-semibold text-[color:var(--foreground)]">{t.dashboard.fastAccess}</h2>
           <div className="mt-6 space-y-3">
             <Link
-              href="/dashboard/generations"
+              href="/dashboard/history"
               className="block rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/40 p-4 text-sm text-[color:var(--foreground)]/75"
             >
               {t.dashboard.browseHistory}

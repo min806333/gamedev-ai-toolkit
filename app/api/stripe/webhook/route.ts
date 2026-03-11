@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { createInternalServerErrorResponse } from "@/lib/api/errors";
 import { resolvePlanFromSubscription, verifyStripeWebhookSignature } from "@/lib/billing/stripe";
 import { syncCheckoutSession, syncFailedInvoice, syncSubscription } from "@/lib/billing/sync-subscription";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type StripeEvent = {
+  id: string;
   type: string;
   data: {
     object: Record<string, any>;
@@ -17,6 +20,27 @@ export async function POST(request: Request) {
   try {
     verifyStripeWebhookSignature(payload, request.headers.get("stripe-signature"));
     const event = JSON.parse(payload) as StripeEvent;
+    const admin = createAdminClient();
+
+    const { data: existingEvent, error: existingEventError } = await admin
+      .from("stripe_events")
+      .select("id")
+      .eq("id", event.id)
+      .maybeSingle();
+
+    if (existingEventError) {
+      throw existingEventError;
+    }
+
+    if (existingEvent) {
+      return new Response("Event already processed", { status: 200 });
+    }
+
+    const { error: insertError } = await admin.from("stripe_events").insert({ id: event.id });
+
+    if (insertError) {
+      throw insertError;
+    }
 
     switch (event.type) {
       case "checkout.session.completed": {
@@ -70,10 +94,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error("Stripe webhook failed:", error);
-
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Webhook failed" },
-      { status: 400 }
-    );
+    return createInternalServerErrorResponse(error, "Internal server error", 400);
   }
 }

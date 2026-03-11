@@ -38,7 +38,7 @@ export function Sidebar({ userEmail }: { userEmail?: string }) {
     { href: uiTool.route, label: t.dashboard.ui, icon: LayoutTemplate },
     { href: "/pixel-art-generator", label: t.dashboard.pixelPrompt, icon: Palette },
     { href: gddTool.route, label: t.dashboard.gdd, icon: FileText },
-    { href: "/dashboard/generations", label: t.dashboard.history, icon: History },
+    { href: "/dashboard/history", label: t.dashboard.history, icon: History },
     { href: "/pricing", label: t.dashboard.usage, icon: Gauge },
     { href: "/pricing", label: t.dashboard.settings, icon: Settings }
   ];
