@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  resolvePlanFromPriceId,
-  resolvePlanFromSubscription,
-  verifyStripeWebhookSignature
-} from "@/lib/stripe";
+import { resolvePlanFromSubscription, verifyStripeWebhookSignature } from "@/lib/billing/stripe";
+import { syncCheckoutSession, syncFailedInvoice, syncSubscription } from "@/lib/billing/sync-subscription";
 
 type StripeEvent = {
   type: string;
@@ -14,16 +10,6 @@ type StripeEvent = {
 };
 
 export const runtime = "nodejs";
-
-async function updateUserById(userId: string, data: Record<string, any>) {
-  const admin = createAdminClient();
-  await admin.from("users").update(data).eq("id", userId);
-}
-
-async function updateUserByCustomerId(customerId: string, data: Record<string, any>) {
-  const admin = createAdminClient();
-  await admin.from("users").update(data).eq("stripe_customer_id", customerId);
-}
 
 export async function POST(request: Request) {
   const payload = await request.text();
@@ -35,15 +21,14 @@ export async function POST(request: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-        const userId = session.metadata?.supabase_user_id ?? session.client_reference_id;
 
-        if (userId) {
-          await updateUserById(userId, {
-            stripe_customer_id: session.customer ?? null,
-            subscription_status: session.status ?? "complete",
-            plan: session.metadata?.plan ?? "free"
-          });
-        }
+        await syncCheckoutSession({
+          userId: session.metadata?.supabase_user_id ?? session.client_reference_id,
+          customerId: session.customer ?? null,
+          subscriptionId: session.subscription ?? null,
+          subscriptionStatus: session.status ?? "complete",
+          plan: session.metadata?.plan ?? "free"
+        });
         break;
       }
 
@@ -51,32 +36,30 @@ export async function POST(request: Request) {
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
         const subscription = event.data.object;
-        const customerId = subscription.customer;
         const priceId = subscription.items?.data?.[0]?.price?.id ?? null;
-        const nextPlan = event.type === "customer.subscription.deleted"
-          ? "free"
-          : resolvePlanFromSubscription(subscription.status, priceId);
 
-        if (customerId) {
-          await updateUserByCustomerId(customerId, {
-            plan: nextPlan,
-            subscription_status: subscription.status ?? null
-          });
-        }
+        await syncSubscription({
+          customerId: subscription.customer ?? null,
+          subscriptionId: subscription.id ?? null,
+          priceId,
+          subscriptionStatus: subscription.status ?? null,
+          currentPeriodEnd: subscription.current_period_end ?? null,
+          plan:
+            event.type === "customer.subscription.deleted"
+              ? "free"
+              : resolvePlanFromSubscription(subscription.status, priceId)
+        });
         break;
       }
 
       case "invoice.payment_failed": {
         const invoice = event.data.object;
-        const customerId = invoice.customer;
-        const priceId = invoice.lines?.data?.[0]?.price?.id ?? null;
 
-        if (customerId) {
-          await updateUserByCustomerId(customerId, {
-            plan: resolvePlanFromPriceId(priceId),
-            subscription_status: invoice.status ?? "past_due"
-          });
-        }
+        await syncFailedInvoice({
+          customerId: invoice.customer ?? null,
+          priceId: invoice.lines?.data?.[0]?.price?.id ?? null,
+          subscriptionStatus: invoice.status ?? "past_due"
+        });
         break;
       }
 

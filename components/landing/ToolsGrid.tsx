@@ -1,47 +1,38 @@
 import Link from "next/link";
 import { ArrowRight, FileText, LayoutTemplate, Lightbulb, Network, ScrollText, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { LANDING_TOOL_IDS, getToolConfig } from "@/lib/tools/tool-config";
 
-const tools = [
-  {
-    href: "/tools/idea",
-    icon: Lightbulb,
-    title: "Game Idea Generator",
-    body: "Turn a genre, platform, and theme into a polished gameplay concept."
-  },
-  {
-    href: "/tools/unity-script",
-    icon: ScrollText,
-    title: "Unity Script Generator",
-    body: "Create gameplay systems and C# scripts with comments and integration notes."
-  },
-  {
-    href: "/tools/ui",
-    icon: LayoutTemplate,
-    title: "Game UI Generator",
-    body: "Generate HUD structures, menu hierarchies, and visual UX direction."
-  },
-  {
-    href: "/tools/gdd",
-    icon: FileText,
-    title: "GDD Generator",
-    body: "Draft full game design documents with scope, loops, and production risks."
-  },
-  {
-    href: "/tools/system-design",
-    icon: Network,
-    title: "System Design Generator",
-    body: "Map progression, economy, ranking, rewards, and live systems."
-  },
-  {
-    href: "/tools/mvp-roadmap",
-    icon: Sparkles,
-    title: "MVP Roadmap Generator",
-    body: "Break features into an execution plan your team can actually ship."
-  }
-];
+const TOOL_ICONS = {
+  idea: Lightbulb,
+  "unity-script": ScrollText,
+  ui: LayoutTemplate,
+  gdd: FileText,
+  "system-design": Network,
+  "mvp-roadmap": Sparkles
+} as const;
+
+const TOOL_BODIES = {
+  idea: "Turn a genre, platform, and theme into a polished gameplay concept.",
+  "unity-script": "Create gameplay systems and C# scripts with comments and integration notes.",
+  ui: "Generate HUD structures, menu hierarchies, and visual UX direction.",
+  gdd: "Draft full game design documents with scope, loops, and production risks.",
+  "system-design": "Map progression, economy, ranking, rewards, and live systems.",
+  "mvp-roadmap": "Break features into an execution plan your team can actually ship."
+} as const;
 
 export function ToolsGrid() {
+  const tools = LANDING_TOOL_IDS.map((toolId) => {
+    const tool = getToolConfig(toolId);
+
+    return {
+      href: tool.route,
+      icon: TOOL_ICONS[toolId],
+      title: tool.label,
+      body: TOOL_BODIES[toolId]
+    };
+  });
+
   return (
     <section id="tools" className="mx-auto max-w-7xl px-6 py-20">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

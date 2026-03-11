@@ -1,21 +1,7 @@
-import { handleGenerationRequest } from "@/lib/generation-route";
-import { detectLanguageInstruction } from "@/lib/language";
-import { buildPixelArtPrompt } from "@/lib/prompts";
-import { pixelArtSchema } from "@/lib/validators";
+import { handleToolGenerationRequest } from "@/lib/tools";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  return handleGenerationRequest({
-    request,
-    schema: pixelArtSchema,
-    tool: "pixel-art",
-    buildPrompt: (payload) =>
-      buildPixelArtPrompt({
-        ...payload,
-        languageInstruction: detectLanguageInstruction(
-          `${payload.theme} ${payload.style} ${payload.palette} ${payload.resolution}`
-        )
-      })
-  });
+  return handleToolGenerationRequest(request, "pixel-art");
 }

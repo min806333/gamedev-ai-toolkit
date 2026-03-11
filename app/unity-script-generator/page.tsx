@@ -1,4 +1,4 @@
-import { UnityScriptGenerator } from "@/components/generator/tool-presets";
+import { ToolPage } from "@/components/generator/ToolPage";
 import { seoPages } from "@/lib/seo-pages";
 
 export const metadata = {
@@ -6,6 +6,6 @@ export const metadata = {
   description: seoPages.unityScript.metadataDescription.en
 };
 
-export default function UnityScriptGeneratorPage() {
-  return <UnityScriptGenerator />;
+export default async function UnityScriptGeneratorPage() {
+  return <ToolPage toolId="unity-script" />;
 }

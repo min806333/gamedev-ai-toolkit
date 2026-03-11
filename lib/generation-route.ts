@@ -1,12 +1,13 @@
 import { ZodType } from "zod";
+import { executeGeneration } from "@/lib/ai/execute-generation";
+import type { AIProviderName } from "@/lib/ai/providers/types";
 import { createClient } from "@/lib/supabase/server";
-import { getOpenAIClient } from "@/lib/openai";
 import {
+  checkUsageLimit,
   ensureUserProfile,
   enforceRequiredPlan,
-  enforceUsageLimit,
   getCachedGeneration,
-  saveGeneration
+  recordGeneration
 } from "@/lib/usage";
 import type { Plan, ToolType } from "@/lib/types";
 
@@ -18,6 +19,8 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
   tool: ToolType;
   buildPrompt: PromptBuilder<TPayload>;
   requiredPlan?: Plan;
+  provider?: AIProviderName;
+  model?: string;
 }) {
   try {
     const payload = params.schema.parse(await params.request.json());
@@ -31,12 +34,17 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     }
 
     await ensureUserProfile(user);
-    const usage = await enforceUsageLimit(user.id);
+    const usage = await checkUsageLimit(user.id);
     if (params.requiredPlan) {
       await enforceRequiredPlan(user.id, params.requiredPlan);
     }
     const promptPayload = JSON.stringify(payload);
-    const cachedResult = await getCachedGeneration(promptPayload, params.tool);
+    const cachedResult = await getCachedGeneration({
+      prompt: promptPayload,
+      tool: params.tool,
+      provider: params.provider,
+      model: params.model
+    });
 
     if (cachedResult) {
       return new Response(cachedResult, {
@@ -48,31 +56,30 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     }
 
     const prompt = params.buildPrompt(payload);
-    const openAiStream = await getOpenAIClient().responses.create({
-      model: "gpt-4.1-mini",
-      input: prompt,
-      stream: true,
-      max_output_tokens: usage.plan === "free" ? 700 : usage.plan === "pro" ? 1800 : 2600
-    });
     const encoder = new TextEncoder();
-    let result = "";
 
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
-          for await (const event of openAiStream) {
-            if (event.type === "response.output_text.delta") {
-              result += event.delta;
-              controller.enqueue(encoder.encode(event.delta));
+          const generation = await executeGeneration({
+            provider: params.provider ?? "openai",
+            model: params.model ?? "gpt-4.1-mini",
+            prompt,
+            maxOutputTokens: usage.plan === "free" ? 700 : usage.plan === "pro" ? 1800 : 2600,
+            onTextDelta: async (delta) => {
+              controller.enqueue(encoder.encode(delta));
             }
-          }
+          });
 
-          if (result.trim() && usage.plan !== "free") {
-            await saveGeneration({
+          if (generation.content.trim() && usage.plan !== "free") {
+            await recordGeneration({
               userId: user.id,
               tool: params.tool,
               prompt: promptPayload,
-              result
+              result: generation.content,
+              provider: generation.provider,
+              model: generation.model,
+              usage: generation.usage
             });
           }
 

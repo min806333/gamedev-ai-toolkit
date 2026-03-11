@@ -1,4 +1,4 @@
-import { GameIdeaGenerator } from "@/components/generator/tool-presets";
+import { ToolPage } from "@/components/generator/ToolPage";
 import { seoPages } from "@/lib/seo-pages";
 
 export const metadata = {
@@ -6,6 +6,6 @@ export const metadata = {
   description: seoPages.gameIdea.metadataDescription.en
 };
 
-export default function GameIdeaGeneratorPage() {
-  return <GameIdeaGenerator />;
+export default async function GameIdeaGeneratorPage() {
+  return <ToolPage toolId="idea" />;
 }

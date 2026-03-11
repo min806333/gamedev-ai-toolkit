@@ -20,6 +20,8 @@ export function PlanUpgradeButton({
   const [loading, setLoading] = useState(false);
 
   const isCurrent = currentPlan === targetPlan;
+  const hasActivePaidPlan = currentPlan === "pro" || currentPlan === "studio";
+  const useBillingPortal = hasActivePaidPlan && targetPlan !== "free";
   const label =
     targetPlan === "pro"
       ? t.pricing.upgradeToPro
@@ -29,11 +31,11 @@ export function PlanUpgradeButton({
 
   async function handleClick() {
     if (!authenticated) {
-      router.push("/login");
+      router.push("/signup");
       return;
     }
 
-    if (isCurrent || loading) {
+    if (loading) {
       return;
     }
 
@@ -45,23 +47,21 @@ export function PlanUpgradeButton({
     setLoading(true);
 
     try {
-      const response = await fetch("/api/stripe/checkout", {
+      const response = await fetch(useBillingPortal ? "/api/stripe/portal" : "/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: targetPlan })
+        body: useBillingPortal ? undefined : JSON.stringify({ plan: targetPlan })
       });
 
-      if (!response.ok) {
-        throw new Error("Plan update failed");
-      }
-
-      const data = (await response.json()) as { url?: string };
+      const data = (await response.json()) as { url?: string; error?: string };
 
       if (!data.url) {
-        throw new Error("Missing checkout URL");
+        throw new Error(data.error || "Missing checkout URL");
       }
 
-      router.push(data.url);
+      window.location.href = data.url;
+    } catch (error) {
+      console.error("Checkout redirect failed:", error);
     } finally {
       setLoading(false);
     }
@@ -70,11 +70,19 @@ export function PlanUpgradeButton({
   return (
     <Button
       onClick={handleClick}
-      disabled={isCurrent || loading}
+      disabled={(isCurrent && targetPlan === "free") || loading}
       variant={targetPlan === "free" ? "secondary" : "primary"}
       className="w-full"
     >
-      {loading ? t.pricing.managingPlan : isCurrent ? t.pricing.currentPlan : label}
+      {loading
+        ? t.pricing.managingPlan
+        : useBillingPortal
+          ? isCurrent
+            ? "Manage billing"
+            : "Change plan"
+          : isCurrent
+            ? t.pricing.currentPlan
+            : label}
     </Button>
   );
 }

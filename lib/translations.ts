@@ -141,7 +141,7 @@ const en = {
     mvpRoadmapMessage: "Upgrade to Studio to generate full MVP Roadmaps."
   },
   footer: {
-    builtWith: "Built with Next.js, Supabase, OpenAI, and Vercel."
+    builtWith: ""
   },
   toolCards: {
     openTool: "Open tool",
@@ -513,7 +513,7 @@ const ko = {
     mvpRoadmapMessage: "전체 MVP 로드맵을 생성하려면 스튜디오로 업그레이드하세요."
   },
   footer: {
-    builtWith: "Next.js, Supabase, OpenAI, Vercel로 제작되었습니다."
+    builtWith: ""
   },
   toolCards: {
     openTool: "도구 열기",

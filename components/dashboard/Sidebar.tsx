@@ -19,20 +19,25 @@ import { LanguageSelector } from "@/components/language-selector";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/language-provider";
+import { getToolConfig } from "@/lib/tools/tool-config";
 
 const navIconClassName = "h-4 w-4";
 
 export function Sidebar({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const ideaTool = getToolConfig("idea");
+  const unityTool = getToolConfig("unity-script");
+  const uiTool = getToolConfig("ui");
+  const gddTool = getToolConfig("gdd");
 
   const items = [
     { href: "/dashboard", label: t.dashboard.overview, icon: LayoutDashboard },
-    { href: "/tools/idea", label: t.dashboard.idea, icon: Lightbulb },
-    { href: "/tools/unity-script", label: t.dashboard.unity, icon: ScrollText },
-    { href: "/tools/ui", label: t.dashboard.ui, icon: LayoutTemplate },
+    { href: ideaTool.route, label: t.dashboard.idea, icon: Lightbulb },
+    { href: unityTool.route, label: t.dashboard.unity, icon: ScrollText },
+    { href: uiTool.route, label: t.dashboard.ui, icon: LayoutTemplate },
     { href: "/pixel-art-generator", label: t.dashboard.pixelPrompt, icon: Palette },
-    { href: "/tools/gdd", label: t.dashboard.gdd, icon: FileText },
+    { href: gddTool.route, label: t.dashboard.gdd, icon: FileText },
     { href: "/dashboard/generations", label: t.dashboard.history, icon: History },
     { href: "/pricing", label: t.dashboard.usage, icon: Gauge },
     { href: "/pricing", label: t.dashboard.settings, icon: Settings }

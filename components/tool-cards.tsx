@@ -4,55 +4,41 @@ import Link from "next/link";
 import { ArrowRight, CalendarRange, Code2, FileText, LayoutTemplate, Lightbulb, Network, PanelsTopLeft, ScrollText } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { Card } from "@/components/ui/card";
+import { hasRequiredPlan } from "@/lib/billing";
+import { getToolCardCopy } from "@/lib/tools/tool-content";
+import { DASHBOARD_TOOL_IDS, getToolConfig } from "@/lib/tools/tool-config";
 import type { Plan } from "@/lib/types";
 
-function hasRequiredPlan(plan: Plan | undefined, requiredPlan?: Plan) {
-  if (!requiredPlan) {
-    return true;
-  }
-
-  if (requiredPlan === "pro") {
-    return plan === "pro" || plan === "studio";
-  }
-
-  return plan === "studio";
-}
+const TOOL_ICONS = {
+  idea: Lightbulb,
+  ui: LayoutTemplate,
+  "unity-script": ScrollText,
+  code: Code2,
+  gdd: FileText,
+  "ui-ux-plan": PanelsTopLeft,
+  "system-design": Network,
+  "mvp-roadmap": CalendarRange
+} as const;
 
 export function ToolCards({ plan }: { plan?: Plan }) {
   const { t } = useLanguage();
-  const tools = [
-    { href: "/tools/idea", icon: Lightbulb, requiredPlan: undefined, badge: undefined, ...t.toolCards.items[0] },
-    { href: "/tools/ui", icon: LayoutTemplate, requiredPlan: undefined, badge: undefined, ...t.toolCards.items[1] },
-    { href: "/tools/unity-script", icon: ScrollText, requiredPlan: undefined, badge: undefined, ...t.toolCards.items[2] },
-    { href: "/tools/code", icon: Code2, requiredPlan: undefined, badge: undefined, ...t.toolCards.items[3] },
-    { href: "/tools/gdd", icon: FileText, requiredPlan: "pro" as const, badge: t.common.proBadge, ...t.toolCards.items[4] },
-    {
-      href: "/tools/ui-ux-planning",
-      icon: PanelsTopLeft,
-      requiredPlan: "pro" as const,
-      badge: t.common.proBadge,
-      ...t.toolCards.items[5]
-    },
-    {
-      href: "/tools/system-design",
-      icon: Network,
-      requiredPlan: "pro" as const,
-      badge: t.common.proBadge,
-      ...t.toolCards.items[6]
-    },
-    {
-      href: "/tools/mvp-roadmap",
-      icon: CalendarRange,
-      requiredPlan: "studio" as const,
-      badge: t.common.studioBadge,
-      ...t.toolCards.items[7]
-    }
-  ];
+  const tools = DASHBOARD_TOOL_IDS.map((toolId) => {
+    const tool = getToolConfig(toolId);
+    const copy = getToolCardCopy(toolId, t);
+
+    return {
+      href: tool.route,
+      icon: TOOL_ICONS[toolId],
+      requiredPlan: tool.requiredPlan,
+      badge: tool.requiredPlan === "studio" ? t.common.studioBadge : tool.requiredPlan === "pro" ? t.common.proBadge : undefined,
+      ...copy
+    };
+  });
 
   return (
     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
       {tools.map((tool) => {
-        const locked = !hasRequiredPlan(plan, tool.requiredPlan);
+        const locked = !hasRequiredPlan(plan ?? "free", tool.requiredPlan);
 
         return (
           <Link key={tool.href} href={tool.href} className="h-full">

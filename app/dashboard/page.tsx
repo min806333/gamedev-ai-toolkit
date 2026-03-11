@@ -1,22 +1,16 @@
-import { redirect } from "next/navigation";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { RecentGenerations } from "@/components/dashboard/RecentGenerations";
 import { UsageCard } from "@/components/dashboard/UsageCard";
 import { Card } from "@/components/ui/card";
+import { requireAuthenticatedUser } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { getToolConfig } from "@/lib/tools";
 import { ensureUserProfile, getUsageSummary } from "@/lib/usage";
 
 export default async function DashboardPage() {
-  const supabase = createClient();
   const admin = createAdminClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
+  const user = await requireAuthenticatedUser("/login");
+  const quickAccessTools = (["idea", "unity-script", "pixel-art"] as const).map((toolId) => getToolConfig(toolId));
 
   await ensureUserProfile(user);
   const usage = await getUsageSummary(user.id);
@@ -37,24 +31,15 @@ export default async function DashboardPage() {
           <p className="text-sm uppercase tracking-[0.24em] text-[color:var(--foreground)]/45">Workspace</p>
           <h2 className="mt-3 text-2xl font-semibold text-[color:var(--foreground)]">Quick access</h2>
           <div className="mt-6 grid gap-3">
-            <a
-              href="/tools/idea"
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/35 p-4 text-sm text-[color:var(--foreground)]/72 transition hover:bg-[color:var(--card-strong)]"
-            >
-              Game Idea Generator
-            </a>
-            <a
-              href="/tools/unity-script"
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/35 p-4 text-sm text-[color:var(--foreground)]/72 transition hover:bg-[color:var(--card-strong)]"
-            >
-              Unity Script Generator
-            </a>
-            <a
-              href="/pixel-art-generator"
-              className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/35 p-4 text-sm text-[color:var(--foreground)]/72 transition hover:bg-[color:var(--card-strong)]"
-            >
-              Pixel Prompt Generator
-            </a>
+            {quickAccessTools.map((tool) => (
+              <a
+                key={tool.id}
+                href={tool.route}
+                className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/35 p-4 text-sm text-[color:var(--foreground)]/72 transition hover:bg-[color:var(--card-strong)]"
+              >
+                {tool.label}
+              </a>
+            ))}
           </div>
         </Card>
       </div>

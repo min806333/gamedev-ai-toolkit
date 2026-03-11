@@ -116,11 +116,23 @@ export function LoginPageContent({
         <form action={formAction} method="post" onSubmit={handleSubmit} className="mt-8 space-y-4">
           <label className="block">
             <span className="mb-2 block text-sm text-[color:var(--foreground)]/65">{t.auth.email}</span>
-            <Input type="email" name="email" placeholder={t.auth.emailPlaceholder} required />
+            <Input
+              type="email"
+              name="email"
+              placeholder={t.auth.emailPlaceholder}
+              required
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+            />
           </label>
           <label className="block">
             <span className="mb-2 block text-sm text-[color:var(--foreground)]/65">{t.auth.password}</span>
-            <Input type="password" name="password" placeholder={t.auth.passwordPlaceholder} required />
+            <Input
+              type="password"
+              name="password"
+              placeholder={t.auth.passwordPlaceholder}
+              required
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+            />
           </label>
           {isSignup ? (
             <label className="block">
@@ -132,6 +144,7 @@ export function LoginPageContent({
                 name="confirmPassword"
                 placeholder={authMessages.confirmPasswordPlaceholder ?? "Confirm your password"}
                 required
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
               />
             </label>
           ) : null}

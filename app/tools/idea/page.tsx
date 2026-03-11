@@ -1,7 +1,5 @@
-"use client";
+import { ToolPage } from "@/components/generator/ToolPage";
 
-import { GameIdeaGenerator } from "@/components/generator/tool-presets";
-
-export default function IdeaToolPage() {
-  return <GameIdeaGenerator />;
+export default async function IdeaToolPage() {
+  return <ToolPage toolId="idea" />;
 }

@@ -5,6 +5,7 @@ import { useLanguage } from "@/components/language-provider";
 import { StatsCard } from "@/components/stats-card";
 import { ToolCards } from "@/components/tool-cards";
 import { Card } from "@/components/ui/card";
+import { getToolConfig } from "@/lib/tools/tool-config";
 import type { Plan } from "@/lib/types";
 
 export function DashboardOverview({
@@ -15,6 +16,7 @@ export function DashboardOverview({
   generations: Array<{ id: string; tool: string; created_at: string; prompt: string }> | null;
 }) {
   const { t } = useLanguage();
+  const gddTool = getToolConfig("gdd");
 
   return (
     <div className="space-y-8">
@@ -51,7 +53,7 @@ export function DashboardOverview({
               {t.dashboard.browseHistory}
             </Link>
             <Link
-              href="/tools/gdd"
+              href={gddTool.route}
               className="block rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/40 p-4 text-sm text-[color:var(--foreground)]/75"
             >
               {t.dashboard.gdd}

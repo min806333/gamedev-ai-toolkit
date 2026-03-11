@@ -75,7 +75,7 @@ export function LoginCard({
             name="email"
             placeholder={t.auth.emailPlaceholder}
             required
-            className="border-[color:var(--border)] bg-[color:var(--background)]/40 text-[color:var(--foreground)] placeholder:text-[color:var(--foreground)]/35 focus:border-[color:var(--border-strong)]"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
           />
         </label>
         <label className="block">
@@ -85,7 +85,7 @@ export function LoginCard({
             name="password"
             placeholder={t.auth.passwordPlaceholder}
             required
-            className="border-[color:var(--border)] bg-[color:var(--background)]/40 text-[color:var(--foreground)] placeholder:text-[color:var(--foreground)]/35 focus:border-[color:var(--border-strong)]"
+            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
           />
         </label>
         <Button className="mt-2 h-12 w-full rounded-2xl" type="submit">

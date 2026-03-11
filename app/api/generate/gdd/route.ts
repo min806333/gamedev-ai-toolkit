@@ -1,20 +1,7 @@
-import { handleGenerationRequest } from "@/lib/generation-route";
-import { detectLanguageInstruction } from "@/lib/language";
-import { buildGddPrompt } from "@/lib/prompts";
-import { gddSchema } from "@/lib/validators";
+import { handleToolGenerationRequest } from "@/lib/tools";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  return handleGenerationRequest({
-    request,
-    schema: gddSchema,
-    tool: "gdd",
-    requiredPlan: "pro",
-    buildPrompt: (payload) =>
-      buildGddPrompt({
-        ...payload,
-        languageInstruction: detectLanguageInstruction(Object.values(payload).join(" "))
-      })
-  });
+  return handleToolGenerationRequest(request, "gdd");
 }

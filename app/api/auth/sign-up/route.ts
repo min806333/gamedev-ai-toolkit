@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAppUrl } from "@/lib/getBaseUrl";
+import { getAuthCallbackUrl, redirectSeeOther } from "@/lib/auth/redirects";
 import { createClient } from "@/lib/supabase/server";
 import { ensureUserProfile } from "@/lib/usage";
 
@@ -16,13 +16,13 @@ export async function POST(request: Request) {
       email,
       password,
       options: {
-        emailRedirectTo: getAppUrl("/auth/callback", request.url)
+        emailRedirectTo: getAuthCallbackUrl(request.url)
       }
     });
 
     if (error) {
       console.error("Auth sign-up failed:", error);
-      return NextResponse.redirect(getAppUrl(`/signup?error=${encodeURIComponent(error.message)}`, request.url));
+      return redirectSeeOther(`/signup?error=${encodeURIComponent(error.message)}`, request.url);
     }
 
     if (data.user) {
@@ -30,12 +30,12 @@ export async function POST(request: Request) {
     }
 
     if (!data.session) {
-      return NextResponse.redirect(getAppUrl("/signup?success=check-email", request.url));
+      return redirectSeeOther("/signup?success=check-email", request.url);
     }
 
-    return NextResponse.redirect(getAppUrl("/dashboard", request.url));
+    return redirectSeeOther("/dashboard", request.url);
   } catch (error) {
     console.error("Auth sign-up route crashed:", error);
-    return NextResponse.redirect(getAppUrl("/signup?error=Unable%20to%20create%20account", request.url));
+    return redirectSeeOther("/signup?error=Unable%20to%20create%20account", request.url);
   }
 }

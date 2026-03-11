@@ -4,51 +4,49 @@ import { Check } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { PlanUpgradeButton } from "@/components/plan-upgrade-button";
 import { Card } from "@/components/ui/card";
+import type { PlanConfig } from "@/lib/billing/plans";
 import type { Plan } from "@/lib/types";
 
 export function PricingCards({
   currentPlan,
-  authenticated
+  authenticated,
+  plans
 }: {
   currentPlan?: Plan;
   authenticated?: boolean;
+  plans?: Array<Pick<PlanConfig, "id" | "label" | "monthlyPrice" | "dailyGenerationLimit">>;
 }) {
   const { t } = useLanguage();
-  const tiers = [
-    {
-      plan: "free" as const,
-      name: t.pricing.free,
-      price: "$0",
-      details: t.pricing.freeDetails,
-      features: t.pricing.freeFeatures
-    },
-    {
-      plan: "pro" as const,
-      name: t.pricing.pro,
-      price: "$12/mo",
-      details: t.pricing.proDetails,
-      features: t.pricing.proFeatures,
-      featured: true
-    },
-    {
-      plan: "studio" as const,
-      name: t.pricing.studio,
-      price: "$29/mo",
-      details: t.pricing.studioDetails,
-      features: t.pricing.studioFeatures
-    }
+  const planList = plans ?? [
+    { id: "free" as const, label: "Free", monthlyPrice: 0, dailyGenerationLimit: 5 },
+    { id: "pro" as const, label: "Pro", monthlyPrice: 12, dailyGenerationLimit: null },
+    { id: "studio" as const, label: "Studio", monthlyPrice: 29, dailyGenerationLimit: null }
   ];
+  const tiers = planList.map((plan) => ({
+    plan: plan.id,
+    name: plan.id === "free" ? t.pricing.free : plan.id === "pro" ? t.pricing.pro : t.pricing.studio,
+    price: plan.monthlyPrice === 0 ? "$0" : `$${plan.monthlyPrice}/mo`,
+    details:
+      plan.id === "free"
+        ? t.pricing.freeDetails
+        : plan.id === "pro"
+          ? t.pricing.proDetails
+          : t.pricing.studioDetails,
+    features:
+      plan.id === "free"
+        ? t.pricing.freeFeatures
+        : plan.id === "pro"
+          ? t.pricing.proFeatures
+          : t.pricing.studioFeatures,
+    featured: plan.id === "pro"
+  }));
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {tiers.map((tier) => (
         <Card
           key={tier.name}
-          className={`border-[color:var(--border)] p-8 ${
-            tier.featured
-              ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))]"
-              : "bg-[color:var(--card)]"
-          }`}
+          className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 transition hover:border-zinc-600 hover:scale-[1.02]"
         >
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm uppercase tracking-[0.24em] text-[color:var(--foreground)]/45">{tier.name}</p>

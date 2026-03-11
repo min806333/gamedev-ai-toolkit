@@ -1,21 +1,13 @@
-import { redirect } from "next/navigation";
 import { AuthHero } from "@/components/auth/AuthHero";
 import { LoginCard } from "@/components/auth/LoginCard";
-import { createClient } from "@/lib/supabase/server";
+import { redirectAuthenticatedUser } from "@/lib/auth/session";
 
 export default async function LoginPage({
   searchParams
 }: {
   searchParams?: { error?: string; success?: string };
 }) {
-  const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    redirect("/dashboard");
-  }
+  await redirectAuthenticatedUser("/dashboard");
 
   return (
     <main className="grid min-h-screen bg-[color:var(--background)] md:grid-cols-2">

@@ -1,11 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 import { SiteHeaderClient } from "@/components/site-header-client";
+import { getCurrentUser } from "@/lib/auth/session";
 
 export async function SiteHeader() {
-  const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   return <SiteHeaderClient isAuthenticated={!!user} />;
 }

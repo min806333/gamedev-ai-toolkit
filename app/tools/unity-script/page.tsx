@@ -1,7 +1,5 @@
-"use client";
+import { ToolPage } from "@/components/generator/ToolPage";
 
-import { UnityScriptGenerator } from "@/components/generator/tool-presets";
-
-export default function UnityScriptToolPage() {
-  return <UnityScriptGenerator />;
+export default async function UnityScriptToolPage() {
+  return <ToolPage toolId="unity-script" />;
 }

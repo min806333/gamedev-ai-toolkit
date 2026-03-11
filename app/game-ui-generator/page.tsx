@@ -1,4 +1,4 @@
-import { GameUiGenerator } from "@/components/generator/tool-presets";
+import { ToolPage } from "@/components/generator/ToolPage";
 import { seoPages } from "@/lib/seo-pages";
 
 export const metadata = {
@@ -6,6 +6,6 @@ export const metadata = {
   description: seoPages.gameUi.metadataDescription.en
 };
 
-export default function GameUiGeneratorPage() {
-  return <GameUiGenerator />;
+export default async function GameUiGeneratorPage() {
+  return <ToolPage toolId="ui" />;
 }

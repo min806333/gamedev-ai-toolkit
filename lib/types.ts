@@ -1,3 +1,5 @@
+import type { AIProviderName } from "@/lib/ai/providers/types";
+
 export type Plan = "free" | "pro" | "studio";
 export type ToolType =
   | "idea"
@@ -23,5 +25,10 @@ export interface GenerationRecord {
   tool: ToolType;
   prompt: string;
   result: string;
+  provider?: AIProviderName | null;
+  model?: string | null;
+  prompt_tokens?: number | null;
+  completion_tokens?: number | null;
+  total_tokens?: number | null;
   created_at: string;
 }

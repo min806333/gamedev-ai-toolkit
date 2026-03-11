@@ -89,7 +89,7 @@ export function InputPanel({
                 value={values[field.name]}
                 onChange={(value) => onValueChange(field.name, value)}
                 placeholder={field.placeholder || t.common.select}
-                options={field.options.map((option) => ({ value: option, label: option }))}
+                options={(field.options ?? []).map((option) => ({ value: option, label: option }))}
                 buttonClassName="w-full bg-[color:var(--background)]/55"
               />
             ) : field.type === "textarea" ? (

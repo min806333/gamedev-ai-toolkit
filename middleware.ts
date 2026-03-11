@@ -1,19 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { hasRequiredPlan } from "@/lib/billing";
 import { getAppUrl } from "@/lib/getBaseUrl";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
+import { TOOL_CONFIGS } from "@/lib/tools";
 
-const PREMIUM_ROUTE_RULES = [
-  { pathname: "/tools/gdd", requiredPlan: "pro" as const },
-  { pathname: "/tools/ui-ux-planning", requiredPlan: "pro" as const },
-  { pathname: "/tools/system-design", requiredPlan: "pro" as const },
-  { pathname: "/tools/mvp-roadmap", requiredPlan: "studio" as const }
-];
-
-const PLAN_ORDER = {
-  free: 0,
-  pro: 1,
-  studio: 2
-} as const;
+const PREMIUM_ROUTE_RULES = TOOL_CONFIGS.filter((tool) => tool.requiredPlan).map((tool) => ({
+  pathname: tool.route,
+  requiredPlan: tool.requiredPlan!
+}));
 
 export async function middleware(request: NextRequest) {
   try {
@@ -45,7 +39,7 @@ export async function middleware(request: NextRequest) {
 
       const currentPlan = (profile?.plan ?? "free") as "free" | "pro" | "studio";
 
-      if (PLAN_ORDER[currentPlan] < PLAN_ORDER[premiumRoute.requiredPlan]) {
+      if (!hasRequiredPlan(currentPlan, premiumRoute.requiredPlan)) {
         return NextResponse.redirect(getAppUrl("/pricing", request.url));
       }
     }

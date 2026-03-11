@@ -5,6 +5,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getToolConfig } from "@/lib/tools/tool-config";
 import type { Plan } from "@/lib/types";
 
 export function DashboardHeader({
@@ -15,6 +16,7 @@ export function DashboardHeader({
   userEmail?: string;
 }) {
   const { t } = useLanguage();
+  const ideaTool = getToolConfig("idea");
 
   return (
     <Card className="overflow-hidden border-[color:var(--border)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--card)_88%,white_12%),var(--card))] p-8">
@@ -34,7 +36,7 @@ export function DashboardHeader({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/tools/idea">
+          <Link href={ideaTool.route}>
             <Button className="h-11 rounded-full px-5">{t.dashboard.idea}</Button>
           </Link>
           <Link href="/pricing">

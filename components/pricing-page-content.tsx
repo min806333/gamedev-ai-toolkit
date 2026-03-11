@@ -3,14 +3,17 @@
 import { Footer } from "@/components/footer";
 import { PricingCards } from "@/components/pricing-cards";
 import { useLanguage } from "@/components/language-provider";
+import type { PlanConfig } from "@/lib/billing/plans";
 import type { Plan } from "@/lib/types";
 
 export function PricingPageContent({
   currentPlan,
-  authenticated
+  authenticated,
+  plans
 }: {
   currentPlan?: Plan;
   authenticated: boolean;
+  plans: Array<Pick<PlanConfig, "id" | "label" | "monthlyPrice" | "dailyGenerationLimit">>;
 }) {
   const { t } = useLanguage();
 
@@ -23,7 +26,7 @@ export function PricingPageContent({
           <p className="mt-4 text-lg leading-8 text-[color:var(--foreground)]/60">{t.pricing.pageDescription}</p>
           <p className="mt-4 text-sm text-[color:var(--foreground)]/50">{t.pricing.saveExportNotice}</p>
         </div>
-        <PricingCards currentPlan={currentPlan} authenticated={authenticated} />
+        <PricingCards currentPlan={currentPlan} authenticated={authenticated} plans={plans} />
       </section>
       <Footer />
     </>

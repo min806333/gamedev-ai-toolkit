@@ -1,13 +1,17 @@
 import { PricingPageContent } from "@/components/pricing-page-content";
 import { SiteHeader } from "@/components/site-header";
-import { createClient } from "@/lib/supabase/server";
+import { getAllPlanConfigs } from "@/lib/billing";
+import { getCurrentUser } from "@/lib/auth/session";
 import { ensureUserProfile, getUsageSummary } from "@/lib/usage";
 
 export default async function PricingPage() {
-  const supabase = createClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
+  const plans = getAllPlanConfigs().map((plan) => ({
+    id: plan.id,
+    label: plan.label,
+    monthlyPrice: plan.monthlyPrice,
+    dailyGenerationLimit: plan.dailyGenerationLimit
+  }));
 
   let currentPlan = undefined;
 
@@ -20,7 +24,7 @@ export default async function PricingPage() {
   return (
     <div className="min-h-screen bg-[color:var(--background)]">
       <SiteHeader />
-      <PricingPageContent currentPlan={currentPlan} authenticated={!!user} />
+      <PricingPageContent currentPlan={currentPlan} authenticated={!!user} plans={plans} />
     </div>
   );
 }

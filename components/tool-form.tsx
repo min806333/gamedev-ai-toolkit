@@ -3,36 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { InputPanel } from "@/components/generator/InputPanel";
 import { ResultPanel } from "@/components/generator/ResultPanel";
+import type { ToolCopy } from "@/lib/tools/types";
 import type { Plan } from "@/lib/types";
 
-export type BaseField = {
-  name: string;
-  label: string;
-  placeholder: string;
-};
-
-export type TextField = BaseField & {
-  type?: "text";
-};
-
-export type SelectField = {
-  name: string;
-  label: string;
-  options: string[];
-  type: "select";
-  placeholder?: string;
-};
-
-export type TextareaField = BaseField & {
-  type: "textarea";
-};
-
-export type Field = TextField | SelectField | TextareaField;
-
-export type Template = {
-  label: string;
-  values: Record<string, string>;
-};
+export type Field = ToolCopy["fields"][number];
+export type Template = NonNullable<ToolCopy["templates"]>[number];
 
 function buildInitialValues(fields: Field[]) {
   return Object.fromEntries(fields.map((field) => [field.name, ""])) as Record<string, string>;
