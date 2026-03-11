@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, Bot, Gamepad2, Layers3 } from "lucide-react";
+import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 
 export function Hero() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden border-b border-[color:var(--border)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,159,122,0.18),transparent_28%),radial-gradient(circle_at_top_right,rgba(112,214,255,0.14),transparent_26%),linear-gradient(180deg,transparent_0%,rgba(255,255,255,0.02)_100%)]" />
@@ -13,24 +18,24 @@ export function Hero() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--card)] px-4 py-2 text-sm text-[color:var(--foreground)]/72">
               <Bot className="h-4 w-4" />
-              AI workflows for indie game development
+              {t.hero.badge}
             </div>
             <h1 className="mt-8 max-w-4xl font-display text-5xl font-semibold tracking-tight text-[color:var(--foreground)] md:text-7xl">
-              Build Games Faster With AI
+              {t.hero.title}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[color:var(--foreground)]/62 md:text-xl">
-              Generate game ideas, Unity scripts, game UI layouts and full game design documents instantly.
+              {t.hero.description}
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link href="/signup">
                 <Button className="h-12 px-6 text-base">
-                  Start Free Trial
+                  {t.nav.startFree}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="#tools">
                 <Button variant="secondary" className="h-12 px-6 text-base">
-                  Explore Tools
+                  {t.nav.tools}
                 </Button>
               </Link>
             </div>
