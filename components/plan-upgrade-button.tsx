@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -31,8 +31,14 @@ export function PlanUpgradeButton({
         : t.pricing.switchPlan;
   const manageBillingLabel = language === "ko" ? "결제 관리" : "Manage billing";
   const changePlanLabel = language === "ko" ? "플랜 변경" : "Change plan";
-  const genericError = language === "ko" ? "결제 페이지를 여는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." : "We could not open billing right now. Please try again.";
-  const timeoutError = language === "ko" ? "응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요." : "Billing is taking too long to respond. Please try again.";
+  const genericError =
+    language === "ko"
+      ? "결제 페이지를 여는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
+      : "We could not open billing right now. Please try again.";
+  const timeoutError =
+    language === "ko"
+      ? "응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요."
+      : "Billing is taking too long to respond. Please try again.";
 
   function localizeError(message: string) {
     if (language !== "ko") {
@@ -51,6 +57,14 @@ export function PlanUpgradeButton({
       return "선택한 플랜 정보를 확인할 수 없습니다.";
     }
 
+    if (message.includes("Unable to load plan details")) {
+      return "플랜 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    }
+
+    if (message.includes("Stripe price ID is not configured")) {
+      return "이 플랜의 결제 가격 정보가 아직 설정되지 않았습니다. 운영 설정을 확인해 주세요.";
+    }
+
     if (message.includes("No active billing account found")) {
       return "활성 결제 계정을 찾을 수 없습니다. 요금제 페이지에서 다시 시도해 주세요.";
     }
@@ -61,6 +75,10 @@ export function PlanUpgradeButton({
 
     if (message.includes("A verified email is required for billing")) {
       return "결제를 진행하려면 인증된 이메일이 필요합니다.";
+    }
+
+    if (message.includes("Unable to prepare billing profile")) {
+      return "결제용 고객 정보를 준비하지 못했습니다. 잠시 후 다시 시도해 주세요.";
     }
 
     return genericError;
@@ -101,8 +119,7 @@ export function PlanUpgradeButton({
       if (contentType.includes("application/json")) {
         data = (await response.json()) as { url?: string; error?: string };
       } else {
-        const text = await response.text();
-        data = { error: text || undefined };
+        data = { error: (await response.text()) || undefined };
       }
 
       if (!response.ok || !data.url) {

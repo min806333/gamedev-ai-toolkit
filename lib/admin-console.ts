@@ -316,6 +316,9 @@ export function getSettingsSummary() {
     { label: "Stripe Secret", value: process.env.STRIPE_SECRET_KEY ? "설정됨" : "누락" },
     { label: "Stripe Webhook", value: process.env.STRIPE_WEBHOOK_SECRET ? "설정됨" : "누락" },
     { label: "Supabase Service Role", value: process.env.SUPABASE_SERVICE_ROLE_KEY ? "설정됨" : "누락" },
-    { label: "Upstash Redis", value: process.env.UPSTASH_REDIS_REST_URL ? "설정됨" : "누락" }
+    {
+      label: "Upstash Redis",
+      value: process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN ? "설정됨" : "미설정 (메모리 fallback)"
+    }
   ];
 }

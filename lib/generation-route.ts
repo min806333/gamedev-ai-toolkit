@@ -1,9 +1,11 @@
+﻿import { revalidatePath } from "next/cache";
 import { ZodType } from "zod";
 import { executeGeneration } from "@/lib/ai/execute-generation";
 import { containsBlockedPromptInstruction } from "@/lib/ai/prompt-safety";
 import type { AIProviderName } from "@/lib/ai/providers/types";
 import { checkRateLimit } from "@/lib/ratelimit";
 import { createClient } from "@/lib/supabase/server";
+import { getToolConfig } from "@/lib/tools/tool-config";
 import {
   checkUsageLimit,
   ensureUserProfile,
@@ -15,6 +17,22 @@ import {
 import type { Plan, ToolType } from "@/lib/types";
 
 type PromptBuilder<TPayload> = (payload: TPayload) => string;
+
+function revalidateGenerationViews(tool: ToolType) {
+  const config = getToolConfig(tool);
+  const paths = [
+    "/dashboard",
+    "/dashboard/history",
+    "/dashboard/generations",
+    "/dashboard/usage",
+    config.route,
+    config.publicRoute
+  ].filter((path): path is string => Boolean(path));
+
+  for (const path of paths) {
+    revalidatePath(path);
+  }
+}
 
 export async function handleGenerationRequest<TPayload extends Record<string, string>>(params: {
   request: Request;
@@ -67,6 +85,7 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     if (params.requiredPlan) {
       await enforceRequiredPlan(user.id, params.requiredPlan);
     }
+
     const promptPayload = JSON.stringify(payload);
     promptForLogging = promptPayload;
     const cachedGeneration = await getCachedGeneration({
@@ -87,6 +106,7 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
           model: cachedGeneration.model,
           usage: cachedGeneration.usage
         });
+        revalidateGenerationViews(params.tool);
       }
 
       await logUsageRequest({
@@ -153,6 +173,7 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
               model: generation.model,
               usage: generation.usage
             });
+            revalidateGenerationViews(params.tool);
           }
 
           await logUsageRequest({

@@ -1,4 +1,4 @@
-import type { AIProviderName, AIUsage } from "@/lib/ai/providers/types";
+﻿import type { AIProviderName, AIUsage } from "@/lib/ai/providers/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ToolType } from "@/lib/types";
 
@@ -13,8 +13,7 @@ export async function logUsageRequest(params: {
   usage?: AIUsage;
 }) {
   const supabase = createAdminClient();
-
-  await supabase.from("usage_logs").insert({
+  const { error } = await supabase.from("usage_logs").insert({
     user_id: params.userId,
     tool: params.tool,
     provider: params.provider ?? null,
@@ -26,5 +25,8 @@ export async function logUsageRequest(params: {
     completion_tokens: params.usage?.outputTokens ?? null,
     total_tokens: params.usage?.totalTokens ?? null
   });
-}
 
+  if (error) {
+    console.error("Usage log insert failed:", error);
+  }
+}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -19,13 +19,15 @@ export function ToolForm({
   description,
   endpoint,
   fields,
-  templates
+  templates,
+  onGenerationComplete
 }: {
   title: string;
   description: string;
   endpoint: string;
   fields: Field[];
   templates?: Template[];
+  onGenerationComplete?: () => Promise<void> | void;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>(() => buildInitialValues(fields));
@@ -127,6 +129,9 @@ export function ToolForm({
       if (!response.body) {
         setResult(await response.text());
         shouldRefresh = true;
+        if (onGenerationComplete) {
+          await onGenerationComplete();
+        }
         return;
       }
 
@@ -148,6 +153,10 @@ export function ToolForm({
       aggregated += decoder.decode();
       setResult(aggregated);
       shouldRefresh = true;
+
+      if (onGenerationComplete) {
+        await onGenerationComplete();
+      }
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Request failed");
     } finally {
