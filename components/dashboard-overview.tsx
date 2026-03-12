@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -26,6 +26,14 @@ export function DashboardOverview({
   const gddCopy = getToolCardCopy("gdd", t);
   const gddLocked = !hasRequiredPlan(usage.plan, gddTool.requiredPlan);
   const planLabel = getPlanLabel(usage.plan, t);
+  const pricingActionLabel =
+    usage.plan === "free"
+      ? t.premium.cta
+      : usage.plan === "pro"
+        ? t.pricing.upgradeToStudio
+        : language === "ko"
+          ? "결제 관리"
+          : "Manage billing";
 
   return (
     <>
@@ -84,7 +92,7 @@ export function DashboardOverview({
                 href="/pricing"
                 className="block rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/40 p-4 text-sm break-keep leading-relaxed text-[color:var(--foreground)]/75 transition hover:bg-[color:var(--card-strong)]"
               >
-                {t.pricing.upgradeToPro}
+                {pricingActionLabel}
               </Link>
             </div>
           </Card>

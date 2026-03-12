@@ -69,24 +69,37 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
     }
     const promptPayload = JSON.stringify(payload);
     promptForLogging = promptPayload;
-    const cachedResult = await getCachedGeneration({
+    const cachedGeneration = await getCachedGeneration({
       prompt: promptPayload,
       tool: params.tool,
       provider: params.provider,
       model: params.model
     });
 
-    if (cachedResult) {
+    if (cachedGeneration) {
+      if (cachedGeneration.result.trim()) {
+        await recordGeneration({
+          userId: user.id,
+          tool: params.tool,
+          prompt: promptPayload,
+          result: cachedGeneration.result,
+          provider: cachedGeneration.provider,
+          model: cachedGeneration.model,
+          usage: cachedGeneration.usage
+        });
+      }
+
       await logUsageRequest({
         userId: user.id,
         tool: params.tool,
-        provider: params.provider,
-        model: params.model,
+        provider: cachedGeneration.provider,
+        model: cachedGeneration.model,
         prompt: promptPayload,
-        status: "success"
+        status: "success",
+        usage: cachedGeneration.usage
       });
 
-      return new Response(cachedResult, {
+      return new Response(cachedGeneration.result, {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
           "X-Cache-Hit": "1"
@@ -130,7 +143,7 @@ export async function handleGenerationRequest<TPayload extends Record<string, st
             }
           });
 
-          if (generation.content.trim() && usage.plan !== "free") {
+          if (generation.content.trim()) {
             await recordGeneration({
               userId: user.id,
               tool: params.tool,

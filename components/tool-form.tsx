@@ -1,5 +1,6 @@
-﻿"use client";
+"use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { InputPanel } from "@/components/generator/InputPanel";
 import { ResultPanel } from "@/components/generator/ResultPanel";
@@ -26,6 +27,7 @@ export function ToolForm({
   fields: Field[];
   templates?: Template[];
 }) {
+  const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>(() => buildInitialValues(fields));
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [result, setResult] = useState("");
@@ -107,6 +109,8 @@ export function ToolForm({
     setCopied(false);
     setExported(false);
 
+    let shouldRefresh = false;
+
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -122,6 +126,7 @@ export function ToolForm({
 
       if (!response.body) {
         setResult(await response.text());
+        shouldRefresh = true;
         return;
       }
 
@@ -142,9 +147,14 @@ export function ToolForm({
 
       aggregated += decoder.decode();
       setResult(aggregated);
+      shouldRefresh = true;
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Request failed");
     } finally {
+      if (shouldRefresh) {
+        router.refresh();
+      }
+
       setLoading(false);
     }
   }

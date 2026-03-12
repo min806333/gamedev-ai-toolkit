@@ -15,6 +15,20 @@ const localStore = new Map<string, { count: number; resetAt: number }>();
 let limiterPromise: Promise<{
   limit: (identifier: string) => Promise<LimitResult>;
 } | null> | null = null;
+let warnedLocalFallback = false;
+
+function warnLocalFallback(reason: string, error?: unknown) {
+  if (warnedLocalFallback) {
+    return;
+  }
+
+  warnedLocalFallback = true;
+  console.warn(`[ratelimit] ${reason}. Falling back to in-memory rate limiting.`);
+
+  if (error) {
+    console.warn("[ratelimit] Fallback reason:", error);
+  }
+}
 
 function runLocalLimit(identifier: string): LimitResult {
   const now = Date.now();
@@ -60,20 +74,26 @@ export async function checkRateLimit(identifier: string): Promise<LimitResult> {
 
 async function createLimiter() {
   if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) {
+    warnLocalFallback("UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is missing");
     return null;
   }
 
-  const [{ Ratelimit }, { Redis }] = await Promise.all([import("@upstash/ratelimit"), import("@upstash/redis")]);
+  try {
+    const [{ Ratelimit }, { Redis }] = await Promise.all([import("@upstash/ratelimit"), import("@upstash/redis")]);
 
-  const redis = new Redis({
-    url: UPSTASH_REDIS_REST_URL,
-    token: UPSTASH_REDIS_REST_TOKEN
-  });
+    const redis = new Redis({
+      url: UPSTASH_REDIS_REST_URL,
+      token: UPSTASH_REDIS_REST_TOKEN
+    });
 
-  return new Ratelimit({
-    redis,
-    limiter: Ratelimit.fixedWindow(10, "60 s"),
-    analytics: true,
-    prefix: "gamedev-ai-toolkit"
-  });
+    return new Ratelimit({
+      redis,
+      limiter: Ratelimit.fixedWindow(10, "60 s"),
+      analytics: true,
+      prefix: "gamedev-ai-toolkit"
+    });
+  } catch (error) {
+    warnLocalFallback("Upstash Redis client could not be initialized", error);
+    return null;
+  }
 }

@@ -1,4 +1,4 @@
-import type { AIProviderName } from "@/lib/ai/providers/types";
+import type { AIProviderName, AIUsage } from "@/lib/ai/providers/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ToolType } from "@/lib/types";
 
@@ -11,7 +11,7 @@ export async function getCachedGeneration(params: {
   const supabase = createAdminClient();
   let query = supabase
     .from("generations")
-    .select("result, tool, provider, model")
+    .select("result, tool, provider, model, prompt_tokens, completion_tokens, total_tokens")
     .eq("prompt", params.prompt)
     .order("created_at", { ascending: false })
     .limit(1);
@@ -29,5 +29,19 @@ export async function getCachedGeneration(params: {
   }
 
   const { data } = await query.maybeSingle();
-  return data?.result ?? null;
+
+  if (!data?.result) {
+    return null;
+  }
+
+  return {
+    result: data.result,
+    provider: data.provider ?? undefined,
+    model: data.model ?? undefined,
+    usage: {
+      inputTokens: data.prompt_tokens ?? null,
+      outputTokens: data.completion_tokens ?? null,
+      totalTokens: data.total_tokens ?? null
+    } satisfies AIUsage
+  };
 }
