@@ -1,10 +1,12 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { CopyResultButton } from "@/components/copy-result-button";
 import { Card } from "@/components/ui/card";
 import { useLanguage } from "@/components/language-provider";
+import { getToolDisplayName } from "@/lib/tools/tool-content";
+import type { ToolType } from "@/lib/types";
 
 export function GenerationsHistory({
   activeFilter,
@@ -13,7 +15,7 @@ export function GenerationsHistory({
   activeFilter: string;
   generations: Array<{ id: string; tool: string; prompt: string; result: string; created_at: string }> | null;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const filters = [
     { label: t.history.all, value: "all" },
@@ -31,16 +33,16 @@ export function GenerationsHistory({
     <div className="space-y-8">
       <div>
         <p className="text-sm uppercase tracking-[0.24em] text-[color:var(--foreground)]/45">{t.history.label}</p>
-        <h1 className="mt-3 text-4xl font-semibold text-[color:var(--foreground)]">{t.history.title}</h1>
-        <p className="mt-3 max-w-3xl text-[color:var(--foreground)]/60">{t.history.description}</p>
+        <h1 className="mt-3 text-4xl font-semibold break-keep text-[color:var(--foreground)]">{t.history.title}</h1>
+        <p className="mt-3 max-w-3xl break-keep leading-relaxed text-[color:var(--foreground)]/60">{t.history.description}</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
         {filters.map((filter) => (
           <Link
             key={filter.value}
-            href={filter.value === "all" ? "/dashboard/generations" : `/dashboard/generations?tool=${filter.value}`}
-            className={`rounded-full border px-4 py-2 text-sm transition ${
+            href={filter.value === "all" ? "/dashboard/history" : `/dashboard/history?tool=${filter.value}`}
+            className={`rounded-full border px-4 py-2 text-sm break-keep transition ${
               activeFilter === filter.value
                 ? "border-[color:var(--foreground)] bg-[color:var(--foreground)] text-[color:var(--background)]"
                 : "border-[color:var(--border)] bg-[color:var(--card)] text-[color:var(--foreground)]/75 hover:bg-[color:var(--card-strong)]"
@@ -56,8 +58,10 @@ export function GenerationsHistory({
           generations.map((item) => (
             <Card key={item.id} className="border-[color:var(--border)] bg-[color:var(--card)] p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.2em] text-[color:var(--foreground)]/45">{item.tool}</p>
+                <div className="min-w-0">
+                  <p className="text-sm break-keep tracking-[0.1em] text-[color:var(--foreground)]/55">
+                    {getToolDisplayName(item.tool as ToolType, t, language)}
+                  </p>
                   <p className="mt-2 text-sm text-[color:var(--foreground)]/45">
                     {new Date(item.created_at).toLocaleString()}
                   </p>
@@ -70,7 +74,7 @@ export function GenerationsHistory({
                   <h2 className="text-sm font-medium uppercase tracking-[0.2em] text-[color:var(--foreground)]/45">
                     {t.history.prompt}
                   </h2>
-                  <pre className="mt-4 whitespace-pre-wrap text-sm leading-7 text-[color:var(--foreground)]/75">
+                  <pre className="mt-4 whitespace-pre-wrap break-keep text-sm leading-relaxed text-[color:var(--foreground)]/75">
                     {item.prompt}
                   </pre>
                 </div>
@@ -78,7 +82,7 @@ export function GenerationsHistory({
                   <h2 className="text-sm font-medium uppercase tracking-[0.2em] text-[color:var(--foreground)]/45">
                     {t.history.result}
                   </h2>
-                  <div className="prose prose-sm mt-4 max-w-none text-[color:var(--foreground)]/80 prose-headings:text-[color:var(--foreground)] prose-p:text-[color:var(--foreground)]/80 prose-li:text-[color:var(--foreground)]/80 prose-strong:text-[color:var(--foreground)]">
+                  <div className="prose prose-sm mt-4 max-w-none break-keep text-[color:var(--foreground)]/80 prose-headings:text-[color:var(--foreground)] prose-p:text-[color:var(--foreground)]/80 prose-li:text-[color:var(--foreground)]/80 prose-strong:text-[color:var(--foreground)]">
                     <ReactMarkdown>{item.result}</ReactMarkdown>
                   </div>
                 </div>
@@ -86,7 +90,7 @@ export function GenerationsHistory({
             </Card>
           ))
         ) : (
-          <Card className="border-[color:var(--border)] bg-[color:var(--card)] p-6 text-sm text-[color:var(--foreground)]/55">
+          <Card className="border-[color:var(--border)] bg-[color:var(--card)] p-6 text-sm break-keep text-[color:var(--foreground)]/55">
             {t.history.empty}
           </Card>
         )}
@@ -94,3 +98,4 @@ export function GenerationsHistory({
     </div>
   );
 }
+

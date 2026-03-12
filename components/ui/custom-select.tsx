@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -53,24 +53,26 @@ export function CustomSelect({
   }, []);
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div ref={containerRef} className={cn("relative isolate", className)}>
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
         className={cn(
-          "flex w-full items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] px-4 py-3 text-left text-sm text-[color:var(--foreground)] transition hover:bg-[color:var(--card-strong)]",
+          "inline-flex h-12 w-full min-w-0 items-center justify-between gap-3 overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] px-4 text-left text-sm text-[color:var(--foreground)] transition hover:bg-[color:var(--card-strong)] focus:outline-none focus:ring-2 focus:ring-zinc-500",
           buttonClassName
         )}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className={selected ? "" : "text-[color:var(--foreground)]/45"}>{selected?.label ?? placeholder}</span>
+        <span className={cn("min-w-0 flex-1 truncate break-keep whitespace-nowrap", selected ? "" : "text-[color:var(--foreground)]/45")}>
+          {selected?.label ?? placeholder}
+        </span>
         <ChevronDown className={cn("h-4 w-4 shrink-0 transition", open && "rotate-180")} />
       </button>
       {open ? (
         <div
           className={cn(
-            "absolute left-0 top-[calc(100%+0.5rem)] z-50 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--background-elevated)] p-2 shadow-panel backdrop-blur-xl",
+            "absolute left-0 top-[calc(100%+0.5rem)] z-[100] min-w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 p-2 shadow-2xl",
             menuClassName
           )}
           role="listbox"
@@ -87,14 +89,14 @@ export function CustomSelect({
                   setOpen(false);
                 }}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm text-[color:var(--foreground)] transition hover:bg-[color:var(--card)]",
-                  active && "bg-[color:var(--card)]"
+                  "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm text-white transition hover:bg-zinc-900",
+                  active && "bg-zinc-900"
                 )}
                 role="option"
                 aria-selected={active}
               >
-                <span>{option.label}</span>
-                {active ? <Check className="h-4 w-4" /> : null}
+                <span className="min-w-0 flex-1 break-keep whitespace-nowrap text-left">{option.label}</span>
+                {active ? <Check className="h-4 w-4 shrink-0" /> : null}
               </button>
             );
           })}

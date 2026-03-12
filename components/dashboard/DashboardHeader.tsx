@@ -5,6 +5,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getPlanLabel } from "@/lib/plan-label";
 import { getToolConfig } from "@/lib/tools/tool-config";
 import type { Plan } from "@/lib/types";
 
@@ -17,6 +18,7 @@ export function DashboardHeader({
 }) {
   const { t } = useLanguage();
   const ideaTool = getToolConfig("idea");
+  const planLabel = getPlanLabel(plan, t);
 
   return (
     <Card className="overflow-hidden border-[color:var(--border)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--card)_88%,white_12%),var(--card))] p-8">
@@ -30,7 +32,7 @@ export function DashboardHeader({
             {t.dashboard.title}
           </h1>
           <p className="mt-3 text-base leading-8 text-[color:var(--foreground)]/60">
-            {t.dashboard.description} {plan.toUpperCase()}.
+            {t.dashboard.description} {planLabel}.
           </p>
           {userEmail ? <p className="mt-4 text-sm text-[color:var(--foreground)]/45">{userEmail}</p> : null}
         </div>

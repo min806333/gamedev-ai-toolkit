@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { InputPanel } from "@/components/generator/InputPanel";
@@ -176,8 +176,8 @@ export function ToolForm({
   const isFormComplete = fields.every((field) => values[field.name]?.trim());
 
   return (
-    <div className="mx-auto w-full max-w-7xl">
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+    <div className="mx-auto w-full max-w-7xl min-w-0">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
         <InputPanel
           title={title}
           description={description}

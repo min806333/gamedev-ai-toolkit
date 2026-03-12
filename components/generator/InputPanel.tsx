@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { CustomSelect } from "@/components/ui/custom-select";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/components/language-provider";
 import type { Field, Template } from "@/components/tool-form";
 
@@ -36,21 +37,21 @@ export function InputPanel({
   const { t } = useLanguage();
 
   return (
-    <Card className="border-[color:var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,white_8%),var(--card))] p-6 lg:p-7">
+    <Card className="border-[color:var(--border)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--card)_92%,white_8%),var(--card))] p-5 sm:p-6 lg:p-7">
       <div className="border-b border-[color:var(--border)] pb-6">
         <p className="text-xs uppercase tracking-[0.24em] text-[color:var(--foreground)]/45">{t.common.tryGenerator}</p>
-        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-[color:var(--foreground)]">
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight break-keep text-[color:var(--foreground)]">
           {title}
         </h1>
-        <p className="mt-3 max-w-xl text-sm leading-7 text-[color:var(--foreground)]/62">{description}</p>
+        <p className="mt-3 max-w-xl text-sm break-keep leading-relaxed text-[color:var(--foreground)]/62">{description}</p>
       </div>
 
       {templates?.length ? (
         <div className="mt-6">
-          <div className="mb-3 flex items-center justify-between gap-4">
-            <span className="text-sm text-[color:var(--foreground)]/65">{t.common.promptTemplates}</span>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
+            <span className="text-sm break-keep text-[color:var(--foreground)]/65">{t.common.promptTemplates}</span>
             {selectedTemplate ? (
-              <span className="rounded-full border border-[color:var(--border)] bg-[color:var(--background)]/60 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-[color:var(--foreground)]/55">
+              <span className="rounded-full border border-[color:var(--border)] bg-[color:var(--background)]/60 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-[color:var(--foreground)]/55 whitespace-nowrap">
                 {selectedTemplate}
               </span>
             ) : null}
@@ -61,7 +62,7 @@ export function InputPanel({
                 key={template.label}
                 type="button"
                 onClick={() => onSelectTemplate(template.label)}
-                className={`rounded-full border px-4 py-2 text-sm transition ${
+                className={`rounded-full border px-4 py-2 text-sm break-keep transition ${
                   selectedTemplate === template.label
                     ? "border-[color:var(--foreground)] bg-[color:var(--foreground)] text-[color:var(--background)]"
                     : "border-[color:var(--border)] bg-[color:var(--background)]/55 text-[color:var(--foreground)]/75 hover:bg-[color:var(--card-strong)]"
@@ -82,15 +83,15 @@ export function InputPanel({
         className="mt-6 space-y-4"
       >
         {fields.map((field) => (
-          <label key={field.name} className="block">
-            <span className="mb-2 block text-sm font-medium text-[color:var(--foreground)]/72">{field.label}</span>
+          <label key={field.name} className="block min-w-0">
+            <span className="mb-2 block text-sm font-medium break-keep text-[color:var(--foreground)]/72">{field.label}</span>
             {field.type === "select" ? (
               <CustomSelect
                 value={values[field.name]}
                 onChange={(value) => onValueChange(field.name, value)}
                 placeholder={field.placeholder || t.common.select}
                 options={(field.options ?? []).map((option) => ({ value: option, label: option }))}
-                buttonClassName="w-full bg-[color:var(--background)]/55"
+                buttonClassName="w-full border-zinc-700 bg-zinc-900 text-white placeholder:text-zinc-500"
               />
             ) : field.type === "textarea" ? (
               <textarea
@@ -98,23 +99,22 @@ export function InputPanel({
                 value={values[field.name]}
                 onChange={(event) => onValueChange(field.name, event.target.value)}
                 placeholder={field.placeholder}
-                className="min-h-36 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/55 px-4 py-3 text-sm text-[color:var(--foreground)] outline-none placeholder:text-[color:var(--foreground)]/35 focus:border-[color:var(--border-strong)]"
+                className="min-h-36 w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm leading-relaxed text-white outline-none transition placeholder:text-zinc-500 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500"
                 required
               />
             ) : (
-              <input
+              <Input
                 name={field.name}
                 value={values[field.name]}
                 onChange={(event) => onValueChange(field.name, event.target.value)}
                 placeholder={field.placeholder}
-                className="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--background)]/55 px-4 py-3 text-sm text-[color:var(--foreground)] outline-none placeholder:text-[color:var(--foreground)]/35 focus:border-[color:var(--border-strong)]"
                 required
               />
             )}
           </label>
         ))}
 
-        <Button disabled={loading || !isFormComplete} className="h-12 w-full rounded-2xl">
+        <Button disabled={loading || !isFormComplete} className="h-12 w-full rounded-2xl bg-white px-5 text-black hover:bg-zinc-200">
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
@@ -125,7 +125,7 @@ export function InputPanel({
           )}
         </Button>
 
-        {error ? <p className="text-sm text-red-300">{error}</p> : null}
+        {error ? <p className="text-sm break-keep text-red-300">{error}</p> : null}
       </form>
     </Card>
   );

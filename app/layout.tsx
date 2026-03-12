@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
 import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { getRequestLanguage } from "@/lib/request-language";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -15,7 +16,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "GameDev AI Toolkit",
+  title: "VertikerAI",
   description: "Generate game ideas, UI systems, and starter code with AI."
 };
 
@@ -24,11 +25,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const language = getRequestLanguage();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={language} suppressHydrationWarning>
       <body className={`${manrope.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider>
-          <LanguageProvider>{children}</LanguageProvider>
+          <LanguageProvider initialLanguage={language}>{children}</LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

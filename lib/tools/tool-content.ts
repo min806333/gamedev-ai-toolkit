@@ -1,7 +1,8 @@
-import type { Language } from "@/lib/translations";
+﻿import type { Language } from "@/lib/translations";
 import { getNestedValue } from "@/lib/utils/object";
 import { getToolConfig } from "./tool-config";
 import type { ToolCopy } from "./types";
+import type { ToolType } from "@/lib/types";
 
 type TranslationRecord = Record<string, any>;
 
@@ -61,4 +62,14 @@ export function getToolCardCopy(toolId: Parameters<typeof getToolConfig>[0], sou
     default:
       return { title: getToolConfig(toolId).label, description: "" };
   }
+}
+
+export function getToolDisplayName(toolId: ToolType, source: TranslationRecord, language: Language) {
+  const config = getToolConfig(toolId);
+
+  if (toolId === "pixel-art") {
+    return config.copy?.[language]?.title ?? config.label;
+  }
+
+  return getToolFormCopy(toolId, source, language).title;
 }

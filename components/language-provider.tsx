@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getLanguageFromPathname } from "@/lib/i18n-routing";
+import { getLanguageCookieValue, isLanguage } from "@/lib/language-cookie";
 import { translations, type Language } from "@/lib/translations";
 
 const STORAGE_KEY = "gamedev-ai-language";
@@ -18,9 +19,24 @@ const LanguageContext = createContext<{
   t: translations.en
 });
 
-function detectInitialLanguage(): Language {
+function persistLanguage(language: Language) {
+  window.localStorage.setItem(STORAGE_KEY, language);
+  document.cookie = getLanguageCookieValue(language);
+}
+
+function readLanguageCookie() {
+  const cookieValue = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${STORAGE_KEY}=`))
+    ?.split("=")[1];
+
+  return isLanguage(cookieValue) ? cookieValue : null;
+}
+
+function detectInitialLanguage(fallback: Language): Language {
   if (typeof window === "undefined") {
-    return "en";
+    return fallback;
   }
 
   const pathLanguage = getLanguageFromPathname(window.location.pathname);
@@ -28,21 +44,32 @@ function detectInitialLanguage(): Language {
     return pathLanguage;
   }
 
+  const cookieLanguage = readLanguageCookie();
+  if (cookieLanguage) {
+    return cookieLanguage;
+  }
+
   const stored = window.localStorage.getItem(STORAGE_KEY) as Language | null;
   if (stored === "en" || stored === "ko") {
     return stored;
   }
 
-  return window.navigator.language.toLowerCase().startsWith("ko") ? "ko" : "en";
+  return window.navigator.language.toLowerCase().startsWith("ko") ? "ko" : fallback;
 }
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
+export function LanguageProvider({
+  children,
+  initialLanguage = "en"
+}: {
+  children: React.ReactNode;
+  initialLanguage?: Language;
+}) {
   const pathname = usePathname();
-  const [language, setLanguageState] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
 
   useEffect(() => {
-    setLanguageState(detectInitialLanguage());
-  }, []);
+    setLanguageState(detectInitialLanguage(initialLanguage));
+  }, [initialLanguage]);
 
   useEffect(() => {
     document.documentElement.lang = language;
@@ -53,13 +80,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     if (pathLanguage && pathLanguage !== language) {
       setLanguageState(pathLanguage);
-      window.localStorage.setItem(STORAGE_KEY, pathLanguage);
+      persistLanguage(pathLanguage);
+      return;
+    }
+
+    if (pathLanguage) {
+      persistLanguage(pathLanguage);
     }
   }, [language, pathname]);
 
   function setLanguage(nextLanguage: Language) {
     setLanguageState(nextLanguage);
-    window.localStorage.setItem(STORAGE_KEY, nextLanguage);
+    persistLanguage(nextLanguage);
   }
 
   const value = useMemo(

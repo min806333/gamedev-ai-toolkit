@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Github, MoveRight } from "lucide-react";
@@ -27,15 +27,13 @@ export function LoginCard({
 
   return (
     <Card className="w-full max-w-md rounded-2xl border-[color:var(--border)] bg-[color:var(--card)] p-8 shadow-xl">
-      <h2 className="text-2xl font-semibold text-[color:var(--foreground)]">
-        {authCopy.login_title ?? "GameDev AI Toolkit"}
-      </h2>
+      <h2 className="text-2xl font-semibold text-[color:var(--foreground)]">{authCopy.login_title ?? "VertikerAI"}</h2>
 
       {error ? (
-        <p className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-200">{error}</p>
+        <p className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm break-keep text-red-200">{error}</p>
       ) : null}
       {success ? (
-        <p className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+        <p className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm break-keep text-emerald-200">
           {success}
         </p>
       ) : null}
@@ -46,7 +44,7 @@ export function LoginCard({
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--background)]/45">
               <MoveRight className="h-4 w-4" />
             </span>
-            {authCopy.continue_google ?? t.auth.continueWithGoogle}
+            <span className="break-keep whitespace-normal text-left">{authCopy.continue_google ?? t.auth.continueWithGoogle}</span>
           </Button>
         </form>
         <form action="/api/auth/github" method="post">
@@ -54,46 +52,32 @@ export function LoginCard({
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[color:var(--border)] bg-[color:var(--background)]/45">
               <Github className="h-4 w-4" />
             </span>
-            {authCopy.continue_github ?? t.auth.continueWithGithub}
+            <span className="break-keep whitespace-normal text-left">{authCopy.continue_github ?? t.auth.continueWithGithub}</span>
           </Button>
         </form>
       </div>
 
       <div className="my-8 flex items-center gap-4">
         <div className="h-px flex-1 bg-[color:var(--border)]" />
-        <span className="text-xs font-medium tracking-[0.24em] text-[color:var(--foreground)]/38">
-          {authCopy.or ?? t.auth.divider}
-        </span>
+        <span className="text-xs font-medium tracking-[0.24em] text-[color:var(--foreground)]/38">{authCopy.or ?? t.auth.divider}</span>
         <div className="h-px flex-1 bg-[color:var(--border)]" />
       </div>
 
       <form action="/api/auth/sign-in" method="post" className="space-y-4">
         <label className="block">
           <span className="mb-2 block text-sm text-[color:var(--foreground)]/68">{t.auth.email}</span>
-          <Input
-            type="email"
-            name="email"
-            placeholder={t.auth.emailPlaceholder}
-            required
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-          />
+          <Input type="email" name="email" placeholder={t.auth.emailPlaceholder} required />
         </label>
         <label className="block">
           <span className="mb-2 block text-sm text-[color:var(--foreground)]/68">{t.auth.password}</span>
-          <Input
-            type="password"
-            name="password"
-            placeholder={t.auth.passwordPlaceholder}
-            required
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500"
-          />
+          <Input type="password" name="password" placeholder={t.auth.passwordPlaceholder} required />
         </label>
-        <Button className="mt-2 h-12 w-full rounded-2xl" type="submit">
+        <Button className="mt-2 h-12 w-full rounded-2xl bg-white text-black hover:bg-zinc-200" type="submit">
           {t.auth.loginButton ?? t.auth.login}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[color:var(--foreground)]/58">
+      <p className="mt-6 text-center text-sm break-keep text-[color:var(--foreground)]/58">
         {authCopy.no_account ?? t.auth.noAccount}{" "}
         <Link href="/signup" className="font-medium text-[color:var(--foreground)] transition hover:opacity-80">
           {authCopy.signup ?? t.auth.createAccountLink}
