@@ -1,4 +1,4 @@
-import { getPlanConfig } from "@/lib/billing";
+﻿import { getPlanConfig } from "@/lib/billing";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Plan } from "@/lib/types";
 import { startOfDay } from "@/lib/usageDate";
@@ -20,6 +20,7 @@ type UserRow = {
   id: string;
   email: string;
   plan: Plan;
+  role: string | null;
   subscription_status: string | null;
   created_at: string;
   stripe_customer_id?: string | null;
@@ -38,10 +39,6 @@ type UsageRow = {
   created_at: string;
 };
 
-export function getDerivedRole(email?: string | null) {
-  return email?.toLowerCase() === process.env.ADMIN_EMAIL?.toLowerCase() ? "admin" : "user";
-}
-
 export async function getAdminOverview() {
   const admin = createAdminClient();
   const today = startOfDay();
@@ -50,7 +47,7 @@ export async function getAdminOverview() {
     admin.from("users").select("*", { count: "exact", head: true }),
     admin
       .from("users")
-      .select("id, email, plan, subscription_status, created_at")
+      .select("id, email, role, plan, subscription_status, created_at")
       .order("created_at", { ascending: false })
       .limit(12),
     admin.from("generations").select("*", { count: "exact", head: true }).gte("created_at", today),
@@ -92,7 +89,7 @@ export async function getAdminUsers() {
   const [usersResult, usageResult] = await Promise.all([
     admin
       .from("users")
-      .select("id, email, plan, subscription_status, created_at")
+      .select("id, email, role, plan, subscription_status, created_at")
       .order("created_at", { ascending: false })
       .limit(100),
     admin.from("usage_logs").select("user_id")
@@ -105,7 +102,7 @@ export async function getAdminUsers() {
 
   return ((usersResult.data ?? []) as UserRow[]).map((user) => ({
     ...user,
-    role: getDerivedRole(user.email),
+    role: user.role ?? "user",
     aiUsage: usageCounts.get(user.id) ?? 0
   }));
 }
@@ -114,7 +111,7 @@ export async function getAdminSubscriptions() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("users")
-    .select("id, email, plan, subscription_status, stripe_customer_id, current_period_end, created_at")
+    .select("id, email, role, plan, subscription_status, stripe_customer_id, current_period_end, created_at")
     .neq("plan", "free")
     .order("current_period_end", { ascending: false, nullsFirst: false })
     .limit(100);
@@ -136,7 +133,7 @@ export async function getAdminGenerations() {
 export async function getAdminUsageByUser() {
   const admin = createAdminClient();
   const [usersResult, usageResult] = await Promise.all([
-    admin.from("users").select("id, email, plan"),
+    admin.from("users").select("id, email, role, plan"),
     admin
       .from("usage_logs")
       .select("user_id, status, total_tokens, created_at")
@@ -172,6 +169,7 @@ export async function getAdminUsageByUser() {
   return (usersResult.data ?? []).map((user) => ({
     id: user.id,
     email: user.email,
+    role: user.role ?? "user",
     plan: user.plan,
     ...byUser.get(user.id),
     requests: byUser.get(user.id)?.requests ?? 0,
@@ -187,7 +185,7 @@ export async function getRevenueSummary() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("users")
-    .select("id, email, plan, subscription_status, current_period_end")
+    .select("id, email, role, plan, subscription_status, current_period_end")
     .neq("plan", "free");
 
   const subscriptions = (data ?? []) as UserRow[];
@@ -237,7 +235,7 @@ export async function getAdminLogs() {
 
 export function getSettingsSummary() {
   return [
-    { label: "Admin Email", value: process.env.ADMIN_EMAIL ? "Configured" : "Missing" },
+    { label: "User Role Source", value: "public.users.role" },
     { label: "OpenAI", value: process.env.OPENAI_API_KEY ? "Configured" : "Missing" },
     { label: "Anthropic", value: process.env.ANTHROPIC_API_KEY ? "Configured" : "Missing" },
     { label: "Stripe Secret", value: process.env.STRIPE_SECRET_KEY ? "Configured" : "Missing" },
@@ -245,4 +243,3 @@ export function getSettingsSummary() {
     { label: "Upstash Redis", value: process.env.UPSTASH_REDIS_REST_URL ? "Configured" : "Missing" }
   ];
 }
-

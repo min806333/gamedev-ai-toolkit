@@ -1,8 +1,9 @@
-create extension if not exists pgcrypto;
+﻿create extension if not exists pgcrypto;
 
 create table if not exists public.users (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null unique,
+  role text not null default 'user' check (role in ('user', 'admin')),
   plan text not null default 'free' check (plan in ('free', 'pro', 'studio')),
   stripe_customer_id text,
   stripe_subscription_id text,
@@ -11,10 +12,14 @@ create table if not exists public.users (
   created_at timestamptz not null default timezone('utc'::text, now())
 );
 
+alter table public.users add column if not exists role text not null default 'user';
 alter table public.users add column if not exists stripe_customer_id text;
 alter table public.users add column if not exists stripe_subscription_id text;
 alter table public.users add column if not exists subscription_status text default 'inactive';
 alter table public.users add column if not exists current_period_end timestamptz;
+
+alter table public.users drop constraint if exists users_role_check;
+alter table public.users add constraint users_role_check check (role in ('user', 'admin'));
 
 create table if not exists public.plans (
   id text primary key check (id in ('free', 'pro', 'studio')),
