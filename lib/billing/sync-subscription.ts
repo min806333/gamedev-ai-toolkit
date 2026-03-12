@@ -1,4 +1,4 @@
-import type { Plan } from "@/lib/types";
+﻿import type { Plan } from "@/lib/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolvePlanFromPriceId, resolvePlanFromSubscription } from "./stripe";
 
@@ -22,7 +22,15 @@ function toIsoDate(timestamp?: number | null) {
 
 async function updateUserProfile(matchColumn: "id" | "stripe_customer_id", matchValue: string, data: Record<string, any>) {
   const admin = createAdminClient();
-  await admin.from("users").update(data).eq(matchColumn, matchValue);
+  const { data: updated, error } = await admin.from("users").update(data).eq(matchColumn, matchValue).select("id").maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!updated) {
+    console.warn("Stripe profile update skipped: no matching user", { matchColumn, matchValue, data });
+  }
 }
 
 export async function syncCheckoutSession(input: SubscriptionSyncInput) {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export function PlanUpgradeButton({
   authenticated: boolean;
 }) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   const isCurrent = currentPlan === targetPlan;
@@ -28,6 +28,8 @@ export function PlanUpgradeButton({
       : targetPlan === "studio"
         ? t.pricing.upgradeToStudio
         : t.pricing.switchPlan;
+  const manageBillingLabel = language === "ko" ? "결제 관리" : "Manage billing";
+  const changePlanLabel = language === "ko" ? "플랜 변경" : "Change plan";
 
   async function handleClick() {
     if (!authenticated) {
@@ -55,7 +57,7 @@ export function PlanUpgradeButton({
 
       const data = (await response.json()) as { url?: string; error?: string };
 
-      if (!data.url) {
+      if (!response.ok || !data.url) {
         throw new Error(data.error || "Missing checkout URL");
       }
 
@@ -78,8 +80,8 @@ export function PlanUpgradeButton({
         ? t.pricing.managingPlan
         : useBillingPortal
           ? isCurrent
-            ? "Manage billing"
-            : "Change plan"
+            ? manageBillingLabel
+            : changePlanLabel
           : isCurrent
             ? t.pricing.currentPlan
             : label}

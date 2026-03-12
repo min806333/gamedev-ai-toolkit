@@ -1,4 +1,4 @@
-import { getAdminSubscriptions } from "@/lib/admin-console";
+﻿import { formatAdminDate, formatAdminPlan, formatAdminSubscriptionStatus, getAdminSubscriptions } from "@/lib/admin-console";
 
 export const dynamic = "force-dynamic";
 
@@ -7,25 +7,24 @@ export default async function InternalConsoleSubscriptionsPage() {
 
   return (
     <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5">
-      <h2 className="text-lg font-semibold text-white">Subscriptions</h2>
+      <h2 className="text-lg font-semibold break-keep text-white">구독</h2>
       <div className="mt-4 space-y-3">
         {subscriptions.length ? (
           subscriptions.map((entry) => (
             <div key={entry.id} className="rounded-xl border border-zinc-800 bg-zinc-900/70 px-4 py-3">
               <div className="text-sm font-medium text-white">{entry.email}</div>
-              <div className="mt-1 text-xs text-zinc-400">
-                {entry.plan} | {entry.subscription_status ?? "inactive"} | {entry.stripe_customer_id ?? "no customer"}
+              <div className="mt-1 text-xs break-keep text-zinc-400">
+                {formatAdminPlan(entry.plan)} | {formatAdminSubscriptionStatus(entry.subscription_status)} | {entry.stripe_customer_id ?? "고객 ID 없음"}
               </div>
               <div className="mt-1 text-xs text-zinc-500">
-                Renews: {entry.current_period_end ? new Date(entry.current_period_end).toLocaleString() : "n/a"}
+                갱신일: {entry.current_period_end ? formatAdminDate(entry.current_period_end) : "없음"}
               </div>
             </div>
           ))
         ) : (
-          <p className="text-sm text-zinc-500">No subscriptions found.</p>
+          <p className="text-sm break-keep text-zinc-500">표시할 구독 정보가 없습니다.</p>
         )}
       </div>
     </section>
   );
 }
-

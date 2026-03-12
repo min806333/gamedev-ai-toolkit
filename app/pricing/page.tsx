@@ -1,10 +1,14 @@
-import { PricingPageContent } from "@/components/pricing-page-content";
+﻿import { PricingPageContent } from "@/components/pricing-page-content";
 import { SiteHeader } from "@/components/site-header";
 import { getAllPlanConfigs } from "@/lib/billing";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ensureUserProfile, getUsageSummary } from "@/lib/usage";
 
-export default async function PricingPage() {
+export default async function PricingPage({
+  searchParams
+}: {
+  searchParams?: { checkout?: string };
+}) {
   const user = await getCurrentUser();
   const plans = getAllPlanConfigs().map((plan) => ({
     id: plan.id,
@@ -24,7 +28,12 @@ export default async function PricingPage() {
   return (
     <div className="min-h-screen bg-[color:var(--background)]">
       <SiteHeader />
-      <PricingPageContent currentPlan={currentPlan} authenticated={!!user} plans={plans} />
+      <PricingPageContent
+        currentPlan={currentPlan}
+        authenticated={!!user}
+        plans={plans}
+        checkoutStatus={searchParams?.checkout}
+      />
     </div>
   );
 }

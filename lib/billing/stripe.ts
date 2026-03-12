@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+﻿import { createHmac, timingSafeEqual } from "node:crypto";
 import { getAppUrl } from "@/lib/getBaseUrl";
 import type { Plan } from "@/lib/types";
 import { getRequiredEnv } from "@/lib/utils/env";
@@ -6,6 +6,7 @@ import { getPaidPlanConfigs, getStripePriceId, type PaidPlan } from "./plans";
 
 const STRIPE_API_BASE = "https://api.stripe.com/v1";
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing", "past_due"]);
+const STRIPE_SIGNATURE_TOLERANCE_SECONDS = 300;
 
 function getStripeSecretKey() {
   return getRequiredEnv("STRIPE_SECRET_KEY");
@@ -45,6 +46,7 @@ export async function createCheckoutSession(params: {
   customerId: string;
   userId: string;
   plan: PaidPlan;
+  priceId?: string;
   requestUrl?: string;
 }) {
   const body = new URLSearchParams();
@@ -54,7 +56,7 @@ export async function createCheckoutSession(params: {
   body.set("success_url", getAppUrl("/pricing?checkout=success", params.requestUrl));
   body.set("cancel_url", getAppUrl("/pricing?checkout=cancelled", params.requestUrl));
   body.set("allow_promotion_codes", "true");
-  body.set("line_items[0][price]", getStripePriceId(params.plan));
+  body.set("line_items[0][price]", params.priceId ?? getStripePriceId(params.plan));
   body.set("line_items[0][quantity]", "1");
   body.set("metadata[supabase_user_id]", params.userId);
   body.set("metadata[plan]", params.plan);
@@ -91,6 +93,18 @@ export function verifyStripeWebhookSignature(payload: string, signatureHeader: s
 
   if (!timestampPart || !signaturePart) {
     throw new Error("Invalid Stripe signature header");
+  }
+
+  const timestamp = Number(timestampPart);
+
+  if (!Number.isFinite(timestamp)) {
+    throw new Error("Invalid Stripe signature timestamp");
+  }
+
+  const ageInSeconds = Math.floor(Date.now() / 1000) - timestamp;
+
+  if (Math.abs(ageInSeconds) > STRIPE_SIGNATURE_TOLERANCE_SECONDS) {
+    throw new Error("Expired Stripe webhook signature");
   }
 
   const signedPayload = `${timestampPart}.${payload}`;

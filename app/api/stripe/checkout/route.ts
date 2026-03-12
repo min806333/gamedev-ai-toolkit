@@ -1,15 +1,10 @@
-import { NextResponse } from "next/server";
-import Stripe from "stripe";
+﻿import { NextResponse } from "next/server";
 import { createInternalServerErrorResponse } from "@/lib/api/errors";
 import { getCurrentUser } from "@/lib/auth/session";
-import { isPaidPlan } from "@/lib/billing";
+import { createCheckoutSession, createStripeCustomer } from "@/lib/billing/stripe";
+import { isPaidPlan, type PaidPlan } from "@/lib/billing/plans";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getAppUrl } from "@/lib/getBaseUrl";
 import { ensureUserProfile } from "@/lib/usage";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover"
-});
 
 export const runtime = "nodejs";
 
@@ -24,52 +19,58 @@ export async function POST(req: Request) {
     await ensureUserProfile(user);
 
     const body = (await req.json()) as { plan?: string };
-    const plan = body.plan;
+    const requestedPlan = body.plan;
 
-    if (!plan || !isPaidPlan(plan)) {
+    if (!requestedPlan || !isPaidPlan(requestedPlan)) {
       return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
     const admin = createAdminClient();
-    const { data: planRecord, error: planError } = await admin
-      .from("plans")
-      .select("id, stripe_price_id")
-      .eq("id", plan)
-      .single();
+    const [{ data: profile, error: profileError }, { data: planRecord, error: planError }] = await Promise.all([
+      admin.from("users").select("id, email, stripe_customer_id, plan").eq("id", user.id).maybeSingle(),
+      admin.from("plans").select("id, stripe_price_id").eq("id", requestedPlan).single()
+    ]);
 
-    if (planError) {
+    if (profileError) {
+      console.error("Stripe checkout profile lookup failed:", profileError);
+      return NextResponse.json({ error: "Unable to load billing profile." }, { status: 500 });
+    }
+
+    if (planError || !planRecord?.stripe_price_id || !isPaidPlan(planRecord.id)) {
       console.error("Stripe checkout plan lookup failed:", planError);
       return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
     }
 
-    const priceId = planRecord?.stripe_price_id ?? null;
+    let customerId = profile?.stripe_customer_id ?? null;
 
-    if (!planRecord || !priceId) {
-      return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
+    if (!customerId) {
+      if (!user.email) {
+        return NextResponse.json({ error: "A verified email is required for billing." }, { status: 400 });
+      }
+
+      const customer = await createStripeCustomer(user.email, user.id);
+      customerId = customer.id;
+
+      const { error: customerUpdateError } = await admin
+        .from("users")
+        .update({ stripe_customer_id: customerId })
+        .eq("id", user.id);
+
+      if (customerUpdateError) {
+        console.error("Stripe customer ID save failed:", customerUpdateError);
+        return NextResponse.json({ error: "Unable to prepare billing profile." }, { status: 500 });
+      }
     }
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1
-        }
-      ],
-      client_reference_id: user.id,
-      customer_email: user.email,
-      metadata: {
-        plan: planRecord.id,
-        supabase_user_id: user.id
-      },
-      success_url: getAppUrl("/dashboard", req.url),
-      cancel_url: getAppUrl("/pricing", req.url)
+    const session = await createCheckoutSession({
+      customerId,
+      userId: user.id,
+      plan: planRecord.id as PaidPlan,
+      priceId: planRecord.stripe_price_id,
+      requestUrl: req.url
     });
 
-    return NextResponse.json({
-      url: session.url
-    });
+    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Stripe checkout failed:", error);
     return createInternalServerErrorResponse(error);

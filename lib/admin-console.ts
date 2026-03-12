@@ -1,17 +1,17 @@
 ﻿import { getPlanConfig } from "@/lib/billing";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { Plan } from "@/lib/types";
+import type { Plan, ToolType } from "@/lib/types";
 import { startOfDay } from "@/lib/usageDate";
 
 export const INTERNAL_CONSOLE_LINKS = [
-  { href: "/internal-console-x9a7f", label: "Dashboard" },
-  { href: "/internal-console-x9a7f/users", label: "Users" },
-  { href: "/internal-console-x9a7f/subscriptions", label: "Subscriptions" },
-  { href: "/internal-console-x9a7f/usage", label: "AI Usage" },
-  { href: "/internal-console-x9a7f/generations", label: "Generations" },
-  { href: "/internal-console-x9a7f/revenue", label: "Revenue" },
-  { href: "/internal-console-x9a7f/logs", label: "Logs" },
-  { href: "/internal-console-x9a7f/settings", label: "Settings" }
+  { href: "/internal-console-x9a7f", label: "대시보드" },
+  { href: "/internal-console-x9a7f/users", label: "사용자" },
+  { href: "/internal-console-x9a7f/subscriptions", label: "구독" },
+  { href: "/internal-console-x9a7f/usage", label: "AI 사용량" },
+  { href: "/internal-console-x9a7f/generations", label: "생성 기록" },
+  { href: "/internal-console-x9a7f/revenue", label: "매출" },
+  { href: "/internal-console-x9a7f/logs", label: "로그" },
+  { href: "/internal-console-x9a7f/settings", label: "설정" }
 ] as const;
 
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing", "past_due"]);
@@ -38,6 +38,81 @@ type UsageRow = {
   error_message?: string | null;
   created_at: string;
 };
+
+export function formatAdminDate(value?: string | null) {
+  if (!value) {
+    return "없음";
+  }
+
+  return new Date(value).toLocaleString("ko-KR");
+}
+
+export function formatAdminPlan(plan: Plan) {
+  switch (plan) {
+    case "free":
+      return "무료";
+    case "pro":
+      return "프로";
+    case "studio":
+      return "스튜디오";
+  }
+}
+
+export function formatAdminRole(role?: string | null) {
+  return role === "admin" ? "관리자" : "사용자";
+}
+
+export function formatAdminSubscriptionStatus(status?: string | null) {
+  switch (status) {
+    case "active":
+      return "활성";
+    case "trialing":
+      return "체험 중";
+    case "past_due":
+      return "연체";
+    case "inactive":
+      return "비활성";
+    case "complete":
+      return "결제 완료";
+    case "canceled":
+      return "해지";
+    case "unpaid":
+      return "미납";
+    default:
+      return status ?? "없음";
+  }
+}
+
+export function formatAdminTool(tool: string) {
+  const labels: Record<ToolType, string> = {
+    idea: "게임 아이디어",
+    ui: "게임 UI",
+    "pixel-art": "픽셀 아트 프롬프트",
+    code: "게임 코드",
+    "unity-script": "Unity 스크립트",
+    gdd: "GDD",
+    "ui-ux-plan": "UI/UX 기획",
+    "system-design": "시스템 설계",
+    "mvp-roadmap": "MVP 로드맵"
+  };
+
+  return labels[tool as ToolType] ?? tool;
+}
+
+export function formatAdminLogStatus(status: string) {
+  switch (status) {
+    case "success":
+      return "성공";
+    case "failed":
+      return "실패";
+    case "rate_limited":
+      return "제한됨";
+    case "blocked":
+      return "차단됨";
+    default:
+      return status;
+  }
+}
 
 export async function getAdminOverview() {
   const admin = createAdminClient();
@@ -235,11 +310,12 @@ export async function getAdminLogs() {
 
 export function getSettingsSummary() {
   return [
-    { label: "User Role Source", value: "public.users.role" },
-    { label: "OpenAI", value: process.env.OPENAI_API_KEY ? "Configured" : "Missing" },
-    { label: "Anthropic", value: process.env.ANTHROPIC_API_KEY ? "Configured" : "Missing" },
-    { label: "Stripe Secret", value: process.env.STRIPE_SECRET_KEY ? "Configured" : "Missing" },
-    { label: "Stripe Webhook", value: process.env.STRIPE_WEBHOOK_SECRET ? "Configured" : "Missing" },
-    { label: "Upstash Redis", value: process.env.UPSTASH_REDIS_REST_URL ? "Configured" : "Missing" }
+    { label: "권한 기준", value: "public.users.role" },
+    { label: "OpenAI", value: process.env.OPENAI_API_KEY ? "설정됨" : "누락" },
+    { label: "Anthropic", value: process.env.ANTHROPIC_API_KEY ? "설정됨" : "누락" },
+    { label: "Stripe Secret", value: process.env.STRIPE_SECRET_KEY ? "설정됨" : "누락" },
+    { label: "Stripe Webhook", value: process.env.STRIPE_WEBHOOK_SECRET ? "설정됨" : "누락" },
+    { label: "Supabase Service Role", value: process.env.SUPABASE_SERVICE_ROLE_KEY ? "설정됨" : "누락" },
+    { label: "Upstash Redis", value: process.env.UPSTASH_REDIS_REST_URL ? "설정됨" : "누락" }
   ];
 }

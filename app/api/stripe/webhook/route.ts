@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { createInternalServerErrorResponse } from "@/lib/api/errors";
 import { resolvePlanFromSubscription, verifyStripeWebhookSignature } from "@/lib/billing/stripe";
 import { syncCheckoutSession, syncFailedInvoice, syncSubscription } from "@/lib/billing/sync-subscription";
@@ -36,12 +36,6 @@ export async function POST(request: Request) {
       return new Response("Event already processed", { status: 200 });
     }
 
-    const { error: insertError } = await admin.from("stripe_events").insert({ id: event.id });
-
-    if (insertError) {
-      throw insertError;
-    }
-
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
@@ -50,7 +44,7 @@ export async function POST(request: Request) {
           userId: session.metadata?.supabase_user_id ?? session.client_reference_id,
           customerId: session.customer ?? null,
           subscriptionId: session.subscription ?? null,
-          subscriptionStatus: session.status ?? "complete",
+          subscriptionStatus: session.payment_status === "paid" ? "active" : session.status ?? "complete",
           plan: session.metadata?.plan ?? "free"
         });
         break;
@@ -89,6 +83,12 @@ export async function POST(request: Request) {
 
       default:
         break;
+    }
+
+    const { error: insertError } = await admin.from("stripe_events").insert({ id: event.id });
+
+    if (insertError && (insertError as { code?: string }).code !== "23505") {
+      throw insertError;
     }
 
     return NextResponse.json({ received: true });
