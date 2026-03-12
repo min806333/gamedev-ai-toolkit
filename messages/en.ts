@@ -72,6 +72,11 @@
           description: "Draft full game design documents with scope, loops, and production risks."
         },
         {
+          id: "ui-ux-plan",
+          title: "UI/UX Planning Generator",
+          description: "Plan screens, flows, HUD structure, and usability guidance for your game."
+        },
+        {
           id: "system-design",
           title: "System Design Generator",
           description: "Map progression, economy, ranking, rewards, and live systems."
@@ -148,4 +153,3 @@
 } as const;
 
 export default enMessages;
-

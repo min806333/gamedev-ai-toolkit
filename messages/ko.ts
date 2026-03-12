@@ -72,6 +72,11 @@
           description: "범위, 루프, 프로덕션 리스크를 포함한 전체 게임 기획 문서를 초안으로 만듭니다."
         },
         {
+          id: "ui-ux-plan",
+          title: "UI/UX 기획 생성기",
+          description: "게임의 화면, 플로우, HUD 구조, 사용성 가이드를 기획합니다."
+        },
+        {
           id: "system-design",
           title: "시스템 디자인 생성기",
           description: "성장, 경제, 랭킹, 보상, 라이브 시스템을 구조화합니다."
@@ -148,5 +153,3 @@
 } as const;
 
 export default koMessages;
-
-

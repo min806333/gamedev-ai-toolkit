@@ -233,7 +233,8 @@ export function getToolConfig(toolId: ToolConfig["id"]) {
 }
 
 export const DASHBOARD_TOOL_IDS = ["idea", "ui", "unity-script", "code", "gdd", "ui-ux-plan", "system-design", "mvp-roadmap"] as const;
-export const LANDING_TOOL_IDS = ["idea", "unity-script", "ui", "gdd", "system-design", "mvp-roadmap"] as const;
+export const LANDING_TOOL_IDS = ["idea", "unity-script", "ui", "gdd", "ui-ux-plan", "system-design", "mvp-roadmap"] as const;
+
 
 
 

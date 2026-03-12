@@ -1,35 +1,58 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { ArrowRight, FileText, LayoutTemplate, Lightbulb, Network, ScrollText, Sparkles } from "lucide-react";
+import { FileText, LayoutTemplate, Lightbulb, Network, PanelsTopLeft, ScrollText, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ToolAccessCard } from "@/components/tool-access-card";
 import { useLanguage } from "@/components/language-provider";
-import { Card } from "@/components/ui/card";
 import { getLandingMessages } from "@/lib/landing-messages";
 import { LANDING_TOOL_IDS, getToolConfig } from "@/lib/tools/tool-config";
+import type { Plan } from "@/lib/types";
 
 const TOOL_ICONS = {
   idea: Lightbulb,
   "unity-script": ScrollText,
   ui: LayoutTemplate,
   gdd: FileText,
+  "ui-ux-plan": PanelsTopLeft,
   "system-design": Network,
   "mvp-roadmap": Sparkles
 } as const;
 
 export function ToolsGrid() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
+  const [plan, setPlan] = useState<Plan>("free");
   const copy = getLandingMessages(language);
-  const tools = LANDING_TOOL_IDS.map((toolId, index) => {
+  const tools = LANDING_TOOL_IDS.map((toolId) => {
     const tool = getToolConfig(toolId);
-    const toolCopy = copy.tools.items[index];
+    const toolCopy = copy.tools.items.find((item) => item.id === toolId);
 
     return {
       href: tool.route,
       icon: TOOL_ICONS[toolId],
-      title: toolCopy.title,
-      body: toolCopy.description
+      title: toolCopy?.title ?? tool.label,
+      description: toolCopy?.description ?? "",
+      requiredPlan: tool.requiredPlan,
+      badge: tool.requiredPlan === "studio" ? t.common.studioBadge : tool.requiredPlan === "pro" ? t.common.proBadge : undefined
     };
   });
+
+  useEffect(() => {
+    let active = true;
+
+    void fetch("/api/account/plan")
+      .then((response) => response.json())
+      .then((data: { plan?: Plan }) => {
+        if (active && data.plan) {
+          setPlan(data.plan);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <section id="tools" className="mx-auto max-w-7xl px-6 py-20">
@@ -44,17 +67,17 @@ export function ToolsGrid() {
       </div>
       <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {tools.map((tool) => (
-          <Link key={tool.href} href={tool.href} className="min-w-0">
-            <Card className="group h-full min-w-0 rounded-[28px] border-[color:var(--border)] bg-[color:var(--card)] p-6 transition hover:-translate-y-1 hover:bg-[color:var(--card-strong)]">
-              <tool.icon className="h-5 w-5 text-[color:var(--foreground)]/82" />
-              <h3 className="mt-5 text-xl font-semibold break-keep text-[color:var(--foreground)]">{tool.title}</h3>
-              <p className="mt-3 text-sm break-keep leading-relaxed text-[color:var(--foreground)]/62">{tool.body}</p>
-              <div className="mt-6 flex items-center text-sm break-keep text-[color:var(--foreground)]/72">
-                {copy.tools.openTool}
-                <ArrowRight className="ml-2 h-4 w-4 shrink-0 transition group-hover:translate-x-1" />
-              </div>
-            </Card>
-          </Link>
+          <ToolAccessCard
+            key={tool.href}
+            href={tool.href}
+            title={tool.title}
+            description={tool.description}
+            icon={tool.icon}
+            plan={plan}
+            requiredPlan={tool.requiredPlan}
+            badge={tool.badge}
+            openLabel={copy.tools.openTool}
+          />
         ))}
       </div>
     </section>

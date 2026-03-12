@@ -1,17 +1,20 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Menu, Sparkles, X } from "lucide-react";
 import { useState } from "react";
-import { useLanguage } from "@/components/language-provider";
 import { Sidebar } from "@/components/dashboard/Sidebar";
+import { useLanguage } from "@/components/language-provider";
 import { Button } from "@/components/ui/button";
+import type { Plan } from "@/lib/types";
 
 export function DashboardShellClient({
   userEmail,
+  userPlan,
   children
 }: {
   userEmail?: string;
+  userPlan: Plan;
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,7 +22,7 @@ export function DashboardShellClient({
 
   return (
     <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)]">
-      <Sidebar userEmail={userEmail} />
+      <Sidebar userEmail={userEmail} userPlan={userPlan} />
 
       <div className="sticky top-0 z-40 border-b border-[color:var(--border)] bg-[color:var(--background-elevated)]/90 px-4 py-3 backdrop-blur-xl lg:hidden">
         <div className="flex items-center justify-between gap-3">
@@ -36,7 +39,7 @@ export function DashboardShellClient({
       {mobileOpen ? (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <button type="button" className="flex-1 bg-black/60" aria-label={t.common.closeNavigation} onClick={() => setMobileOpen(false)} />
-          <Sidebar userEmail={userEmail} mobile onNavigate={() => setMobileOpen(false)} />
+          <Sidebar userEmail={userEmail} userPlan={userPlan} mobile onNavigate={() => setMobileOpen(false)} />
         </div>
       ) : null}
 

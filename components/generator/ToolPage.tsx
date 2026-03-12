@@ -1,4 +1,4 @@
-import { PremiumToolGate } from "@/components/premium-tool-gate";
+﻿import { PremiumToolGate } from "@/components/premium-tool-gate";
 import { ToolRenderer } from "@/components/generator/ToolRenderer";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getToolConfig } from "@/lib/tools/tool-config";
@@ -20,12 +20,7 @@ export async function ToolPage({ toolId }: { toolId: ToolType }) {
   }
 
   return (
-    <PremiumToolGate
-      plan={usage.plan}
-      requiredPlan={tool.requiredPlan}
-      message=""
-      messageKey={tool.premiumMessageKey}
-    >
+    <PremiumToolGate plan={usage.plan} requiredPlan={tool.requiredPlan} toolId={toolId}>
       <ToolRenderer toolId={toolId} />
     </PremiumToolGate>
   );
